@@ -28,15 +28,15 @@
 
 ### Infra & Docker
 - [ ] `docker-compose.yml` with three services: `postgres`, `api`, `web`
-- [ ] Postgres 16 image, named volume `postgres_data`, port 5432
+- [x] Postgres 16 image, named volume `postgres_data`, port 5432
 - [ ] Set `restart: unless-stopped` on all services
 - [ ] Configure Docker Desktop to launch at login
 - [ ] `.env` loading via pydantic-settings (DB URL, secrets)
 
 ### Database bootstrap
-- [ ] `backend/sql/init.sql`: creates `danaos_app` user (read/write) and `danaos_ro` user (read-only, for NLP)
-- [ ] Enable extensions: `uuid-ossp`, `pg_trgm`
-- [ ] Create `danaos` and `danaos_test` databases
+- [x] `backend/sql/init.sql`: creates `dana_os_app` user (read/write) and `dana_os_ro` user (read-only, for NLP)
+- [x] Enable extensions: `uuid-ossp`, `pg_trgm`
+- [x] Create `dana_os` and `dana_os_test` databases
 
 ### Backend scaffold (FastAPI)
 - [ ] Project skeleton: `backend/app/{main.py,config.py,db.py,routers/,models/,schemas/,services/}`
@@ -64,7 +64,7 @@
 - [ ] **Test a restore once** with dummy data before Phase 1
 
 ### Testing & CI
-- [ ] pytest setup: `tests/conftest.py` with `danaos_test` fixture (create + teardown per session)
+- [ ] pytest setup: `tests/conftest.py` with `dana_os_test` fixture (create + teardown per session)
 - [ ] FastAPI `TestClient` example test against `/health`
 - [ ] Vitest + React Testing Library setup
 - [ ] One frontend smoke test (renders shell)
@@ -414,7 +414,7 @@
 
 - [ ] Schema description file (`docs/schema_for_nlp.md`) — update after every migration
 - [ ] `/query` endpoint: NL → schema prompt → Claude API → SQL → read-only execute → answer
-- [ ] SQL safety: must start with `SELECT`, enforced via `danaos_ro` user
+- [ ] SQL safety: must start with `SELECT`, enforced via `dana_os_ro` user
 - [ ] Frontend: persistent header query bar, answer card with optional Highcharts render
 - [ ] Tests: mocked Claude API, SQL rejection, RO user cannot mutate, answer formatting
 - [ ] **Success:** "how far am I in Breaking Bad" → "S4E8, last watched 3 days ago"
