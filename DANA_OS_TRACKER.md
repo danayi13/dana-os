@@ -31,7 +31,7 @@
 - [x] Postgres 16 image, named volume `postgres_data`, port 5432
 - [ ] Set `restart: unless-stopped` on all services
 - [ ] Configure Docker Desktop to launch at login
-- [ ] `.env` loading via pydantic-settings (DB URL, secrets)
+- [x] `.env` loading via pydantic-settings (DB URL, secrets)
 
 ### Database bootstrap
 - [x] `backend/sql/init.sql`: creates `dana_os_app` user (read/write) and `dana_os_ro` user (read-only, for NLP)
@@ -39,13 +39,13 @@
 - [x] Create `dana_os` and `dana_os_test` databases
 
 ### Backend scaffold (FastAPI)
-- [ ] Project skeleton: `backend/app/{main.py,config.py,db.py,routers/,models/,schemas/,services/}`
-- [ ] FastAPI app with CORS configured for `localhost:5173`
-- [ ] `/health` endpoint returning `{status, database, version}`
-- [ ] SQLAlchemy: `engine`, `SessionLocal`, `ReadOnlySessionLocal` (separate engine), `Base`
-- [ ] Pydantic-settings config object
-- [ ] Error handling middleware (uniform JSON error shape)
-- [ ] Alembic init + migration `0001_baseline.py` (no tables; document date-spine convention in comment)
+- [x] Project skeleton: `backend/app/{main.py,config.py,db.py,routers/,models/,schemas/,services/}`
+- [x] FastAPI app with CORS configured for `localhost:5173`
+- [x] `/health` endpoint returning `{status, database, version}`
+- [x] SQLAlchemy: `engine`, `SessionLocal`, `ReadOnlySessionLocal` (separate engine), `Base`
+- [x] Pydantic-settings config object
+- [x] Error handling middleware (uniform JSON error shape)
+- [x] Alembic init + migration `0001_baseline.py` (no tables; document date-spine convention in comment)
 
 ### Frontend scaffold (Vite + React + TS)
 - [ ] `npm create vite@latest` with React + TS template
@@ -64,18 +64,18 @@
 - [ ] **Test a restore once** with dummy data before Phase 1
 
 ### Testing & CI
-- [ ] pytest setup: `tests/conftest.py` with `dana_os_test` fixture (create + teardown per session)
-- [ ] FastAPI `TestClient` example test against `/health`
+- [x] pytest setup: `tests/conftest.py` with `dana_os_test` fixture (create + teardown per session)
+- [x] FastAPI `TestClient` example test against `/health`
 - [ ] Vitest + React Testing Library setup
 - [ ] One frontend smoke test (renders shell)
 - [ ] GitHub Actions workflow: backend tests + frontend tests on push/PR
 - [ ] Branch protection: PRs blocked on failing CI
 
 ### Phase 0 success check
-- [ ] `docker compose up -d` starts cleanly cold
-- [ ] `GET /health` returns ok + db connected
+- [x] `docker compose up -d` starts cleanly cold
+- [x] `GET /health` returns ok + db connected
 - [ ] Frontend loads at `localhost:5173`
-- [ ] `alembic current` shows `0001`
+- [x] `alembic current` shows `0001`
 - [ ] `backup.sh` produces a `.dump.gz`
 - [ ] CI green on `main`
 

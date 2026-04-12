@@ -1,0 +1,56 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
+      - ".pre-commit-config.yaml"
+      - "docker-compose.yml"
+
+jobs:
+  lint-and-test:
+    name: lint + pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.11.6"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install backend deps
+        run: uv sync --frozen
+
+      - name: Seed .env for docker compose and tests
+        working-directory: ${{ github.workspace }}
+        run: cp .env.example .env
+
+      - name: Start postgres via docker compose
+        working-directory: ${{ github.workspace }}
+        run: docker compose up -d --wait
+
+      - name: Run pre-commit (ruff + hygiene hooks)
+        working-directory: ${{ github.workspace }}
+        run: uvx pre-commit run --all-files --show-diff-on-failure
+
+      - name: Apply alembic migrations
+        run: uv run alembic upgrade head
+
+      - name: Run pytest
+        run: uv run pytest -v
+
+      - name: Dump postgres logs on failure
+        if: failure()
+        working-directory: ${{ github.workspace }}
+        run: docker compose logs postgres
