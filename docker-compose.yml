@@ -1,0 +1,34 @@
+# Dana OS — docker compose
+#
+# PR 1 (infra/postgres-bootstrap) scope: postgres only.
+# Services `api` (FastAPI) and `web` (Vite) are added in later PRs.
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: dana_os_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      # Superuser created by the postgres image on first boot.
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Passed through so init.sql can read them via psql \getenv.
+      DANA_OS_APP_PASSWORD: ${DANA_OS_APP_PASSWORD}
+      DANA_OS_RO_PASSWORD: ${DANA_OS_RO_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Runs once, on first boot against an empty data volume.
+      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    name: dana_os_postgres_data
