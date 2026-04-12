@@ -13,12 +13,12 @@
 
 ## Pre-flight (before Phase 0)
 
-- [ ] Create GitHub repo `dana-os` (private)
-- [ ] Decide directory layout: `/backend`, `/frontend`, `/infra`, `/scripts`, `/docs`
-- [ ] Drop `dana-os-spec-v1.docx` into `/docs` for reference
-- [ ] Install prerequisites locally: Docker Desktop, Node 20+, Python 3.12+, `uv` or `poetry`
-- [ ] Create `.env.example` with placeholder keys (Anthropic, Oura, Spotify, Google, Sheets)
-- [ ] Add `.gitignore` covering `.env`, `__pycache__`, `node_modules`, `dist`, `*.dump`
+- [x] Create GitHub repo `dana-os` (private)
+- [x] Decide directory layout: `/backend`, `/frontend`, `/infra`, `/scripts`, `/docs`
+- [x] Drop `dana-os-spec-v1.docx` into `/docs` for reference
+- [x] Install prerequisites locally: Docker Desktop, Node 20+, Python 3.12+, `uv` or `poetry`
+- [x] Create `.env.example` with placeholder keys (Anthropic, Oura, Spotify, Google, Sheets)
+- [x] Add `.gitignore` covering `.env`, `__pycache__`, `node_modules`, `dist`, `*.dump`
 
 ---
 
