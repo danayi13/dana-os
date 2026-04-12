@@ -21,13 +21,15 @@ def _envelope(error_type: str, message: str, status_code: int) -> JSONResponse:
     )
 
 
-async def http_exception_handler(_request: Request, exc: HTTPException) -> JSONResponse:
+async def http_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
+    # exc typed as Exception for pylance typing
+    assert isinstance(exc, HTTPException)
     return _envelope("HTTPException", exc.detail, exc.status_code)
 
 
-async def validation_exception_handler(
-    _request: Request, exc: RequestValidationError
-) -> JSONResponse:
+async def validation_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
+    # exc typed as Exception for pylance typing
+    assert isinstance(exc, RequestValidationError)
     return _envelope("ValidationError", str(exc.errors()), 422)
 
 
