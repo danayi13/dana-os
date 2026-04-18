@@ -30,7 +30,7 @@
 - [ ] `docker-compose.yml` with three services: `postgres`, `api`, `web`
 - [x] Postgres 16 image, named volume `postgres_data`, port 5432
 - [ ] Set `restart: unless-stopped` on all services
-- [ ] Configure Docker Desktop to launch at login
+- [x] Configure Docker Desktop to launch at login
 - [x] `.env` loading via pydantic-settings (DB URL, secrets)
 
 ### Database bootstrap
@@ -48,13 +48,17 @@
 - [x] Alembic init + migration `0001_baseline.py` (no tables; document date-spine convention in comment)
 
 ### Frontend scaffold (Vite + React + TS)
-- [ ] `npm create vite@latest` with React + TS template
-- [ ] Tailwind CSS + shadcn/ui installed and configured
-- [ ] React Router with placeholder routes per planned module
-- [ ] TanStack Query: `QueryClient` + typed `apiClient` wrapper
-- [ ] Shell layout: sidebar, header (NLP query bar placeholder), main content
-- [ ] `vite-plugin-pwa`: manifest, service worker, installable — **do not skip, painful to retrofit**
-- [ ] Dark/light theme baseline
+- [x] `npm create vite@latest` with React + TS template
+- [x] Tailwind CSS + shadcn/ui installed and configured
+- [x] React Router with placeholder routes per planned module
+- [x] TanStack Query: `QueryClient` + typed `apiClient` wrapper
+- [x] Shell layout: sidebar, header with ⌘K trigger, main content area
+- [x] `vite-plugin-pwa`: manifest, service worker, installable — **do not skip, painful to retrofit**
+- [x] Dark/light theme baseline
+- [x] **⌘K command palette** (`cmdk`): navigate to any page by name or keyword; Home page stub at `/`
+  - Commands live in `frontend/src/commands/navigation.ts` — each entry has `label` + `keywords`
+  - **Future phases must add their commands here** (or via `useCommands()` hook once built in Phase 12)
+  - NLP query bar lives only on `/query` page; header has the ⌘K trigger button only
 
 ### Backups
 - [ ] `scripts/backup.sh`: `pg_dump` + gzip + timestamped filename → `~/dana-os-backups/`
@@ -66,15 +70,15 @@
 ### Testing & CI
 - [x] pytest setup: `tests/conftest.py` with `dana_os_test` fixture (create + teardown per session)
 - [x] FastAPI `TestClient` example test against `/health`
-- [ ] Vitest + React Testing Library setup
-- [ ] One frontend smoke test (renders shell)
-- [ ] GitHub Actions workflow: backend tests + frontend tests on push/PR
-- [ ] Branch protection: PRs blocked on failing CI
+- [x] Vitest + React Testing Library setup
+- [x] One frontend smoke test (renders shell)
+- [x] GitHub Actions workflow: backend tests + frontend tests on push/PR
+- [x] Branch protection: PRs blocked on failing CI
 
 ### Phase 0 success check
 - [x] `docker compose up -d` starts cleanly cold
 - [x] `GET /health` returns ok + db connected
-- [ ] Frontend loads at `localhost:5173`
+- [x] Frontend loads at `localhost:5173`
 - [x] `alembic current` shows `0001`
 - [ ] `backup.sh` produces a `.dump.gz`
 - [ ] CI green on `main`

@@ -48,13 +48,24 @@ uv run uvicorn app.main:app --reload
 ```
 Then `curl http://localhost:8000/health` should return `{"status":"ok","database":"ok",...}`.
 
-### 5. Run tests
+### 5. Run the frontend
 ```
-cd backend
-uv run pytest                 # needs postgres running (step 3)
+cd frontend
+npm install
+npm run dev
+```
+Opens at `http://localhost:5173`. Backend (step 4) doesn't need to be running for the shell to load, but API calls will fail until it is.
+
+### 6. Run tests
+```
+# Backend (needs postgres running — step 3)
+cd backend && uv run pytest
+
+# Frontend
+cd frontend && npm run test:run
 ```
 
-### 6. Install the pre-commit hook (one-time per clone)
+### 7. Install the pre-commit hook (one-time per clone)
 ```
 uv tool install pre-commit
 pre-commit install            # from repo root
@@ -96,3 +107,8 @@ _A running log of what's actually usable. Roadmap lives in [DANA_OS_TRACKER.md](
   - Alembic migrations with empty `0001_baseline`
   - pytest suite: `/health` smoke test + integration tests pinning the postgres read-only permission boundary
   - Ruff lint/format enforced via pre-commit hook and GitHub Actions CI
+  - Vite 8 + React 19 + TypeScript 6 frontend scaffold at `localhost:5173` — sidebar nav for all 15 phases, header with ⌘K trigger, dark/light theme toggle
+  - TanStack Query + typed `apiClient` wrapper, React Router 7 with stub routes for every planned module
+  - PWA-ready: `vite-plugin-pwa` manifest + service worker wired up
+  - Vitest + React Testing Library with smoke tests + command palette tests; frontend CI via GitHub Actions
+  - **⌘K command palette** — press `Cmd+K` (or `Ctrl+K`) anywhere to fuzzy-search and navigate to any page; commands in `frontend/src/commands/navigation.ts` with keyword hints for future phases
