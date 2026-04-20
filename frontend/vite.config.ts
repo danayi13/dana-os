@@ -37,7 +37,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      // Use process.cwd() instead of __dirname so the alias resolves correctly
+      // both on the host and inside Docker (where VirtioFS realpathSync can
+      // return the host path instead of the container /app path).
+      "@": path.resolve(process.cwd(), "./src"),
     },
   },
   test: {

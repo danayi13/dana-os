@@ -1,5 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/providers/ThemeProvider";
+import { IconButton } from "@/components/ui/IconButton";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 function isDark(theme: string) {
   return (
@@ -14,21 +16,10 @@ export function ThemeToggle() {
   const toggle = () => setTheme(isDark(theme) ? "light" : "dark");
 
   return (
-    <div className="group relative">
-      <button
-        onClick={toggle}
-        aria-label="Toggle theme"
-        className="flex items-center justify-center rounded-md p-1.5 transition-opacity hover:opacity-70"
-        style={{ color: "var(--text)" }}
-      >
+    <Tooltip content="Toggle dark / light mode">
+      <IconButton onClick={toggle} aria-label="Toggle theme">
         {isDark(theme) ? <Sun size={16} /> : <Moon size={16} />}
-      </button>
-      <div
-        className="pointer-events-none absolute right-0 top-full z-50 mt-1 whitespace-nowrap rounded-md border px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100"
-        style={{ background: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
-      >
-        Toggle dark / light mode
-      </div>
-    </div>
+      </IconButton>
+    </Tooltip>
   );
 }

@@ -27,9 +27,9 @@
 **Goal:** `docker compose up -d` works, health endpoint green, backups running, CI green. No user features.
 
 ### Infra & Docker
-- [ ] `docker-compose.yml` with three services: `postgres`, `api`, `web`
+- [x] `docker-compose.yml` with three services: `postgres`, `api`, `web`
 - [x] Postgres 16 image, named volume `postgres_data`, port 5432
-- [ ] Set `restart: unless-stopped` on all services
+- [x] Set `restart: unless-stopped` on all services
 - [x] Configure Docker Desktop to launch at login
 - [x] `.env` loading via pydantic-settings (DB URL, secrets)
 
@@ -61,10 +61,10 @@
   - NLP query bar lives only on `/query` page; header has the ⌘K trigger button only
 
 ### Backups
-- [ ] `scripts/backup.sh`: `pg_dump` + gzip + timestamped filename → `~/dana-os-backups/`
-- [ ] Include `/uploads` dir in backup (even though it doesn't exist yet)
-- [ ] launchd plist (or crontab) for 02:00 daily run
-- [ ] 30-day retention prune logic in script
+- [x] `scripts/backup.sh`: `pg_dump` + gzip + timestamped filename → `~/dana-os-backups/`
+- [x] Include `/uploads` dir in backup (even though it doesn't exist yet)
+- [x] launchd plist (`infra/com.danaos.backup.plist`) for 02:00 daily run
+- [x] 30-day retention prune logic in script
 - [ ] **Test a restore once** with dummy data before Phase 1
 
 ### Testing & CI
@@ -80,7 +80,7 @@
 - [x] `GET /health` returns ok + db connected
 - [x] Frontend loads at `localhost:5173`
 - [x] `alembic current` shows `0001`
-- [ ] `backup.sh` produces a `.dump.gz`
+- [x] `backup.sh` produces a `.dump.gz`
 - [ ] CI green on `main`
 
 ---

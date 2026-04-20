@@ -1,4 +1,6 @@
 import { PanelLeft } from "lucide-react";
+import { IconButton } from "@/components/ui/IconButton";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 interface SidebarToggleProps {
   onToggle: () => void;
@@ -6,13 +8,10 @@ interface SidebarToggleProps {
 
 export function SidebarToggle({ onToggle }: SidebarToggleProps) {
   return (
-    <button
-      onClick={onToggle}
-      aria-label="Toggle sidebar"
-      className="flex items-center justify-center rounded-md p-1.5 transition-opacity hover:opacity-70"
-      style={{ color: "var(--text)" }}
-    >
-      <PanelLeft size={16} />
-    </button>
+    <Tooltip content="Toggle sidebar" side="left">
+      <IconButton onClick={onToggle} aria-label="Toggle sidebar">
+        <PanelLeft size={16} />
+      </IconButton>
+    </Tooltip>
   );
 }

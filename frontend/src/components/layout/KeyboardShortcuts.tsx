@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Keyboard } from "lucide-react";
+import { IconButton } from "@/components/ui/IconButton";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 const SHORTCUTS = [
   { keys: ["Cmd", "K"], description: "Open command palette" },
@@ -22,25 +24,14 @@ export function KeyboardShortcuts() {
   }, [open]);
 
   return (
-    <div ref={ref} className="group relative">
-      <button
+    <Tooltip ref={ref} content="Global Keyboard Shortcuts" hidden={open}>
+      <IconButton
         onClick={() => setOpen((prev) => !prev)}
         aria-label="Keyboard shortcuts"
         aria-expanded={open}
-        className="flex items-center justify-center rounded-md p-1.5 transition-opacity hover:opacity-70"
-        style={{ color: "var(--text)" }}
       >
         <Keyboard size={16} />
-      </button>
-
-      {!open && (
-        <div
-          className="pointer-events-none absolute right-0 top-full z-50 mt-1 whitespace-nowrap rounded-md border px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100"
-          style={{ background: "var(--bg)", borderColor: "var(--border)", color: "var(--text)" }}
-        >
-          Global Keyboard Shortcuts
-        </div>
-      )}
+      </IconButton>
 
       {open && (
         <div
@@ -73,6 +64,6 @@ export function KeyboardShortcuts() {
           ))}
         </div>
       )}
-    </div>
+    </Tooltip>
   );
 }

@@ -1,7 +1,10 @@
 # Dana OS — docker compose
 #
-# PR 1 (infra/postgres-bootstrap) scope: postgres only.
-# Services `api` (FastAPI) and `web` (Vite) are added in later PRs.
+# Three services: postgres (data), api (FastAPI), web (Vite).
+# All services use restart: unless-stopped so they survive reboots.
+#
+# Dev-server mode: source code is bind-mounted into api and web so
+# hot-reload works without rebuilding the image.
 
 services:
   postgres:
@@ -11,16 +14,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      # Superuser created by the postgres image on first boot.
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      # Passed through so init.sql can read them via psql \getenv.
       DANA_OS_APP_PASSWORD: ${DANA_OS_APP_PASSWORD}
       DANA_OS_RO_PASSWORD: ${DANA_OS_RO_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # Runs once, on first boot against an empty data volume.
       - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -29,6 +29,40 @@ services:
       retries: 10
       start_period: 10s
 
+  api:
+    build: ./backend
+    container_name: dana_os_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      # Override DB URLs to use the postgres service name, not localhost.
+      DATABASE_URL: postgresql+psycopg://${DANA_OS_APP_USER:-dana_os_app}:${DANA_OS_APP_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DATABASE_URL_RO: postgresql+psycopg://${DANA_OS_RO_USER:-dana_os_ro}:${DANA_OS_RO_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    volumes:
+      - ./backend:/app
+      - api_venv:/app/.venv  # keeps container-built venv isolated from host
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    container_name: dana_os_web
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - web_node_modules:/app/node_modules  # keeps container node_modules isolated from host
+    depends_on:
+      - api
+
 volumes:
   postgres_data:
     name: dana_os_postgres_data
+  api_venv:
+    name: dana_os_api_venv
+  web_node_modules:
+    name: dana_os_web_node_modules

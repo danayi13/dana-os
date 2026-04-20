@@ -30,33 +30,63 @@ cp .env.example .env          # defaults are fine for local dev
 ```
 Then launch Docker Desktop (`open -a Docker`) if it isn't already running.
 
-### 3. Start Postgres
+### 3. Start all services
 ```
 docker compose up -d
 ```
-Starts `postgres:16` on `localhost:5432` and runs [backend/sql/init.sql](backend/sql/init.sql) on first boot to provision users (`dana_os_app`, `dana_os_ro`), databases (`dana_os`, `dana_os_test`), and extensions (`uuid-ossp`, `pg_trgm`). With `restart: unless-stopped`, **run this once and leave it** — the container survives reboots.
+Starts three containers: `postgres:16`, the FastAPI backend, and the Vite frontend.
 
-- `docker compose down` — stop container, **keep data**.
-- `docker compose down -v` — stop container **and wipe the volume** (re-runs `init.sql` on next `up`). Only use when you want a clean slate. All data is done.
+- **Postgres** (`localhost:5432`) — runs [backend/sql/init.sql](backend/sql/init.sql) on first boot to provision users (`dana_os_app`, `dana_os_ro`), databases (`dana_os`, `dana_os_test`), and extensions (`uuid-ossp`, `pg_trgm`).
+- **API** (`localhost:8000`) — runs `uvicorn --reload`; runs `alembic upgrade head` before starting. Source is bind-mounted so code changes hot-reload without rebuilding.
+- **Web** (`localhost:5173`) — runs `vite dev`; source is bind-mounted for the same reason.
 
-### 4. Run the backend
+With `restart: unless-stopped`, **run this once and leave it** — all three containers survive reboots.
+
 ```
+docker compose down          # stop all containers, keep data
+docker compose down -v       # stop all containers and wipe volumes (re-runs init.sql on next up)
+docker compose build         # rebuild images (needed after adding a new Python/npm dependency)
+```
+
+<details>
+<summary>Run without Docker (alternative)</summary>
+
+```bash
+# Backend
 cd backend
 uv sync                       # installs deps into .venv
 uv run alembic upgrade head   # apply migrations
 uv run uvicorn app.main:app --reload
-```
-Then `curl http://localhost:8000/health` should return `{"status":"ok","database":"ok",...}`.
 
-### 5. Run the frontend
-```
+# Frontend (separate terminal)
 cd frontend
 npm install
 npm run dev
 ```
-Opens at `http://localhost:5173`. Backend (step 4) doesn't need to be running for the shell to load, but API calls will fail until it is.
+Postgres must still be running (step 3 postgres-only, or a host install).
+</details>
 
-### 6. Run tests
+### 4. Install the daily backup (one-time)
+```bash
+# From repo root:
+sed -e "s|__REPO_ROOT__|$(pwd)|g" -e "s|__HOME__|$HOME|g" \
+  infra/com.danaos.backup.plist \
+  > ~/Library/LaunchAgents/com.danaos.backup.plist
+launchctl load ~/Library/LaunchAgents/com.danaos.backup.plist
+```
+Runs `scripts/backup.sh` daily at 02:00. Backups land in `~/Documents/dana-os-backups/` as `dana_os_YYYY-MM-DD_HH-MM.dump.gz`. Kept for 30 days.
+
+```bash
+launchctl start com.danaos.backup   # run immediately to test
+```
+
+**Restore** a backup:
+```bash
+gunzip -c ~/Documents/dana-os-backups/dana_os_YYYY-MM-DD_HH-MM.dump.gz \
+  | docker exec -i dana_os_postgres psql -U postgres -d dana_os
+```
+
+### 5. Run tests
 ```
 # Backend (needs postgres running — step 3)
 cd backend && uv run pytest
@@ -65,7 +95,7 @@ cd backend && uv run pytest
 cd frontend && npm run test:run
 ```
 
-### 7. Install the pre-commit hook (one-time per clone)
+### 6. Install the pre-commit hook (one-time per clone)
 ```
 uv tool install pre-commit
 pre-commit install            # from repo root
@@ -112,3 +142,5 @@ _A running log of what's actually usable. Roadmap lives in [DANA_OS_TRACKER.md](
   - PWA-ready: `vite-plugin-pwa` manifest + service worker wired up
   - Vitest + React Testing Library with smoke tests + command palette tests; frontend CI via GitHub Actions
   - **⌘K command palette** — press `Cmd+K` (or `Ctrl+K`) anywhere to fuzzy-search and navigate to any page; commands in `frontend/src/commands/navigation.ts` with keyword hints for future phases
+  - **Docker multi-service compose** — `docker compose up -d` starts all three services (`postgres`, `api`, `web`) with hot-reload bind mounts and `restart: unless-stopped`
+  - **Daily backup** — `scripts/backup.sh` dumps postgres + archives `uploads/`, gzipped with 30-day retention in `~/Documents/dana-os-backups/`; scheduled via `infra/com.danaos.backup.plist` at 02:00
