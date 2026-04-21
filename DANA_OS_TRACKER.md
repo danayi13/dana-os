@@ -65,7 +65,7 @@
 - [x] Include `/uploads` dir in backup (even though it doesn't exist yet)
 - [x] launchd plist (`infra/com.danaos.backup.plist`) for 02:00 daily run
 - [x] 30-day retention prune logic in script
-- [ ] **Test a restore once** with dummy data before Phase 1
+- [x] **Test a restore once** with dummy data before Phase 1
 
 ### Testing & CI
 - [x] pytest setup: `tests/conftest.py` with `dana_os_test` fixture (create + teardown per session)
@@ -81,7 +81,7 @@
 - [x] Frontend loads at `localhost:5173`
 - [x] `alembic current` shows `0001`
 - [x] `backup.sh` produces a `.dump.gz`
-- [ ] CI green on `main`
+- [x] CI green on `main`
 
 ---
 
@@ -90,22 +90,23 @@
 **Shared infra built here (used by every later module):** Sheets sync adapter, staleness nudge engine stub, home screen shell.
 
 ### Schema (Alembic 0002)
-- [ ] `habit_definitions` (id, name, description, type, unit, target, period_type, period_config, active, created_at)
-- [ ] `habit_logs` (id, habit_id, date NOT NULL, value, notes, created_at) — index `(date, habit_id)`
-- [ ] `goals` (id, year, type, name, target_value, linked_module, status, completed_at)
-- [ ] `reminder_config` table (generic — used by every staleness-nudge module going forward): subject_type, subject_id, interval, enabled
-- [ ] `nudge_states` table (generic — powers snooze/dismiss across every module): subject_type, subject_id, state (active/snoozed/dismissed), snoozed_until (nullable timestamp), dismissed_at (nullable), updated_at. Unique on (subject_type, subject_id). Engine treats `snoozed` as inactive until `snoozed_until` passes; `dismissed` as inactive until the user-defined "next event" resets it (e.g., logging a habit re-arms its nudge).
+- [x] `habit_definitions` (id, name, description, unit, target, direction (at_least/at_most), period_type, period_config, created_at) — no `active` flag; lifecycle is in `habit_activation_periods`. `period_config` stores sheets metadata: `{"sheet_col": "B", "sheet_type": "checkbox|numeric|text"}`
+- [x] `habit_activation_periods` (id, habit_id FK, starts_on DATE, ends_on DATE nullable, archived_at TIMESTAMP nullable) — one row per run of a habit. Restart = new row; history fully preserved. Active = `starts_on <= today AND (ends_on IS NULL OR ends_on >= today) AND archived_at IS NULL`
+- [x] `habit_logs` (id, habit_id, date NOT NULL, value, notes, created_at) — index `(date, habit_id)`
+- [x] `goals` (id, year, type, name, direction (at_least/at_most), target_value, linked_module, status, completed_at, archived_at TIMESTAMP nullable) — `archived_at` hides abandoned goals without deleting history; restart within a year = clear `archived_at`, restart in a new year = new row
+- [x] `reminder_config` table (generic — used by every staleness-nudge module going forward): subject_type, subject_id, interval, enabled
+- [x] `nudge_states` table (generic — powers snooze/dismiss across every module): subject_type, subject_id, state (active/snoozed/dismissed), snoozed_until (nullable timestamp), dismissed_at (nullable), updated_at. Unique on (subject_type, subject_id). Engine treats `snoozed` as inactive until `snoozed_until` passes; `dismissed` as inactive until the user-defined "next event" resets it (e.g., logging a habit re-arms its nudge).
 
 ### Backend
-- [ ] `routers/habits.py`: CRUD for definitions + logs + backfill upsert
-- [ ] Period type validation (daily / weekly / N-times-per-week / weekly-average)
-- [ ] Weekly running total / average calculation service
-- [ ] `routers/goals.py`: CRUD, mark binary done, milestone progress link
-- [ ] **Sheets sync adapter** (generic): `services/sheets_sync.py` with input-cells-only contract
-- [ ] Habits Sheets sync implementation (first consumer of adapter)
-- [ ] **Staleness engine stub**: `services/nudges.py` returning a list of stale items for home screen, filtering out snoozed (until snoozed_until) and dismissed entries
-- [ ] Snooze/dismiss endpoints: `POST /nudges/{subject_type}/{subject_id}/snooze` (body: duration — 1d/3d/1w/custom), `POST /nudges/{subject_type}/{subject_id}/dismiss`, `POST /nudges/{subject_type}/{subject_id}/reset` (re-arms after dismissal)
-- [ ] Auto-reset hook: when a tracked event happens (habit logged, climbing session entered, etc.), the corresponding nudge state resets to active
+- [x] `routers/habits.py`: CRUD for definitions + activation periods (create/archive/restart) + logs + backfill upsert
+- [x] Period type validation (daily / weekly / monthly / custom via `PeriodType` enum)
+- [x] Weekly running total / average + streak calculation (`services/habit_calc.py`)
+- [x] `routers/goals.py`: CRUD, mark binary done, milestone progress link
+- [x] **Sheets sync adapter** (generic): `services/sheets_sync.py` with input-cells-only contract, graceful degradation when credentials absent
+- [x] **Sheets sync wiring**: `POST /habits/{id}/logs` and `/backfill` automatically write to the spreadsheet when `period_config.sheet_col` is set. Column mapping stored in `period_config: {"sheet_col": "B", "sheet_type": "checkbox|numeric|text"}`
+- [x] **Staleness engine stub**: `services/nudges.py` returning a list of stale items for home screen, filtering out snoozed (until snoozed_until) and dismissed entries
+- [x] Snooze/dismiss endpoints: `POST /nudges/habits/{id}/snooze`, `/dismiss`, `/reset`
+- [x] Auto-reset hook: when a tracked event happens (habit logged, climbing session entered, etc.), the corresponding nudge state resets to active
 
 ### Frontend
 - [ ] Habit definition admin page (create/edit/archive)
@@ -115,17 +116,16 @@
 - [ ] Highcharts: streak heatmap, completion line, weekly grid
 - [ ] Home screen shell with today's unchecked habits + nudge strip
 - [ ] **Nudge strip controls**: each nudge has snooze (1d / 3d / 1w / custom) and dismiss actions, accessible via swipe on mobile or a small menu on desktop
+- [ ] **Timezone**: every request to `GET /habits/{id}/stats` and `GET /nudges/stale` must include `?tz=` using `Intl.DateTimeFormat().resolvedOptions().timeZone`. Goals endpoints do not need it (year-scoped, no date.today() logic).
 
 ### Tests
-- [ ] Habit CRUD endpoints
-- [ ] Period type validation (each variant)
-- [ ] Backfill upsert (no duplicates)
-- [ ] Weekly average calculation
-- [ ] Sheets sync adapter (mocked Google client)
-- [ ] Goal progress calculation
-- [ ] Nudge snooze: stays hidden until snoozed_until passes, then reappears
-- [ ] Nudge dismiss: stays hidden until reset by a new tracked event
-- [ ] Auto-reset on event (logging a habit re-arms its nudge)
+- [x] Habit CRUD endpoints (definitions + activation periods: create, archive, restart)
+- [x] Backfill upsert (no duplicates)
+- [x] Weekly average calculation + streak (`test_habits.py` stats tests)
+- [x] Sheets sync adapter graceful degradation (`test_sheets_sync.py`)
+- [x] Goal CRUD + complete/archive/progress (`test_goals.py`)
+- [x] Nudge snooze/dismiss/reset + stale detection (`test_nudges.py`)
+- [x] Auto-reset on event (logging a habit re-arms its nudge)
 
 ### Phase 1 success check
 - [ ] Create a weekly-average habit, log today, backfill 3 past days

@@ -13,6 +13,7 @@ from app.errors import (
     unhandled_exception_handler,
     validation_exception_handler,
 )
+from app.routers import goals, habits, nudges
 
 app = FastAPI(title="Dana OS", version=__version__)
 
@@ -28,6 +29,10 @@ app.add_middleware(
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, unhandled_exception_handler)
+
+app.include_router(habits.router)
+app.include_router(goals.router)
+app.include_router(nudges.router)
 
 
 @app.get("/health")

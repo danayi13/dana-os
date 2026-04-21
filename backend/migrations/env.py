@@ -15,15 +15,20 @@ from sqlalchemy import engine_from_config, pool
 # Alembic Config object — access to alembic.ini values.
 config = context.config
 
-# Inject the URL from settings so we don't duplicate it in alembic.ini.
-config.set_main_option("sqlalchemy.url", get_settings().database_url)
+# Inject the URL from settings only when alembic.ini still has the placeholder.
+# Test fixtures call `config.set_main_option("sqlalchemy.url", test_db_url)` before
+# invoking `command.upgrade`, so we must not overwrite their value.
+_PLACEHOLDER = "driver://user:pass@localhost/dbname"
+if (config.get_main_option("sqlalchemy.url") or "") in ("", _PLACEHOLDER):
+    config.set_main_option("sqlalchemy.url", get_settings().database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Importing models here ensures their tables register on Base.metadata before
-# autogenerate inspects it. Add new model module imports as they appear.
-# (No models yet — 0001_baseline is intentionally empty.)
+# autogenerate inspects it. Add new model module imports as phases introduce them.
+import app.models  # noqa: F401, E402  # pyright: ignore[reportUnusedImport]
+
 target_metadata = Base.metadata
 
 

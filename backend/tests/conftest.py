@@ -18,8 +18,12 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from app.config import get_settings
-from sqlalchemy import Engine, create_engine
+from app.db import get_db
+from app.main import app
+from fastapi.testclient import TestClient
+from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine import make_url
+from sqlalchemy.orm import Session, sessionmaker
 
 _BACKEND_DIR = Path(__file__).resolve().parents[1]
 _TEST_DB_NAME = "dana_os_test"
@@ -62,3 +66,46 @@ def test_ro_engine(test_db_url_ro: str) -> Generator[Engine, None, None]:
     engine = create_engine(test_db_url_ro, future=True)
     yield engine
     engine.dispose()
+
+
+@pytest.fixture()
+def db(test_engine: Engine) -> Generator[Session, None, None]:
+    """Function-scoped session that rolls back after each test via savepoints.
+
+    Uses a nested transaction (SAVEPOINT) so each test starts with a clean
+    slate without recreating the schema or running migrations again.
+    """
+    connection = test_engine.connect()
+    transaction = connection.begin()
+
+    # Bind a session to this connection so all ORM ops share it.
+    TestingSessionLocal = sessionmaker(bind=connection, autoflush=False, autocommit=False)
+    session = TestingSessionLocal()
+
+    # Use SAVEPOINT so inner commits don't actually commit.
+    nested = connection.begin_nested()
+
+    @event.listens_for(session, "after_transaction_end")
+    def restart_savepoint(sess: Session, trans: object) -> None:  # pyright: ignore[reportUnusedFunction]
+        nonlocal nested
+        if not nested.is_active:
+            nested = connection.begin_nested()
+
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
+
+
+@pytest.fixture()
+def client(db: Session) -> Generator[TestClient, None, None]:
+    """TestClient with the real DB dependency overridden to use the test session."""
+
+    def override_get_db() -> Generator[Session, None, None]:
+        yield db
+
+    app.dependency_overrides[get_db] = override_get_db
+    with TestClient(app) as c:
+        yield c
+    app.dependency_overrides.clear()
