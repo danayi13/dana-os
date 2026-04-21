@@ -3,7 +3,6 @@
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # .env lives at the repo root (one level up from backend/). Resolve from this
@@ -18,10 +17,15 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    database_url: str = Field(..., alias="DATABASE_URL")
-    database_url_ro: str = Field(..., alias="DATABASE_URL_RO")
+    # pydantic-settings matches env vars case-insensitively by default,
+    # so `database_url` reads DATABASE_URL, `database_url_ro` reads DATABASE_URL_RO, etc.
+    database_url: str
+    database_url_ro: str
+    google_sheets_credentials_path: str | None = None
+    habits_sheet_id: str | None = None
+    habits_sheet_tab: str = "2026"
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    return Settings()
+    return Settings()  # type: ignore[call-arg]

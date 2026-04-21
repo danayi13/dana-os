@@ -43,6 +43,7 @@ services:
     volumes:
       - ./backend:/app
       - api_venv:/app/.venv  # keeps container-built venv isolated from host
+      - ./secrets:/secrets:ro  # service account keys — never committed
     depends_on:
       postgres:
         condition: service_healthy
