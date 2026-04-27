@@ -109,14 +109,14 @@
 - [x] Auto-reset hook: when a tracked event happens (habit logged, climbing session entered, etc.), the corresponding nudge state resets to active
 
 ### Frontend
-- [ ] Habit definition admin page (create/edit/archive)
-- [ ] Daily entry: today's checklist, large tap targets, weekly running total visible
-- [ ] Backfill calendar view (tap past day → prefilled entry)
-- [ ] Goals page: yearly binary checklist + milestone progress bars
-- [ ] Highcharts: streak heatmap, completion line, weekly grid
-- [ ] Home screen shell with today's unchecked habits + nudge strip
-- [ ] **Nudge strip controls**: each nudge has snooze (1d / 3d / 1w / custom) and dismiss actions, accessible via swipe on mobile or a small menu on desktop
-- [ ] **Timezone**: every request to `GET /habits/{id}/stats` and `GET /nudges/stale` must include `?tz=` using `Intl.DateTimeFormat().resolvedOptions().timeZone`. Goals endpoints do not need it (year-scoped, no date.today() logic).
+- [x] Habit definition admin page (create/edit/archive) — includes `sheet_col` and `sheet_type` fields in `period_config` so each habit can be mapped to a spreadsheet column; logging auto-syncs once configured
+- [x] Daily entry: today's checklist split by period (Daily/Weekly columns), date navigation, inline binary/numeric/text inputs
+- [x] Backfill grid (date × habit spreadsheet; binary/numeric/text inputs per column; bulk-submit staged edits)
+- [x] Goals page: yearly binary checklist + milestone progress bars
+- [x] Highcharts: streak heatmap (365d), daily area/column chart, weekly bar chart with per-bar success coloring (green/red), success-% summary, target + avg plotLines, max-streak stat with date-range tooltip
+- [x] Home screen: habits split by period type (Daily/Weekly columns) with date navigation, GoalsWidget, nudge strip
+- [x] **Nudge strip controls**: each nudge has snooze (1d / 3d / 1w / custom) and dismiss actions, accessible via swipe on mobile or a small menu on desktop
+- [x] **Timezone**: every request to `GET /habits/{id}/stats` and `GET /nudges/stale` must include `?tz=` using `Intl.DateTimeFormat().resolvedOptions().timeZone`. Goals endpoints do not need it (year-scoped, no date.today() logic).
 
 ### Tests
 - [x] Habit CRUD endpoints (definitions + activation periods: create, archive, restart)
@@ -126,13 +126,18 @@
 - [x] Goal CRUD + complete/archive/progress (`test_goals.py`)
 - [x] Nudge snooze/dismiss/reset + stale detection (`test_nudges.py`)
 - [x] Auto-reset on event (logging a habit re-arms its nudge)
+- [x] Frontend: HabitsPage tab navigation (`HabitsPage.test.tsx`)
+- [x] Frontend: HabitChecklist renders, logs binary + numeric habits, compact mode (`HabitChecklist.test.tsx`)
+- [x] Frontend: GoalsList renders binary/milestone, completion confirmation flow, create dialog (`GoalsList.test.tsx`)
+- [x] Frontend: HomePage renders today's habits + nudge strip (`HomePage.test.tsx`)
 
 ### Phase 1 success check
-- [ ] Create a weekly-average habit, log today, backfill 3 past days
-- [ ] Streak chart renders
-- [ ] Mark a yearly binary goal as done
-- [ ] Spreadsheet receives the entry within seconds
-- [ ] Home screen shows unchecked habits
+- [x] Create a weekly-average habit, log today, backfill 3 past days
+- [x] Streak chart renders
+- [x] Mark a yearly binary goal as done
+- [x] Spreadsheet receives the entry within seconds
+- [x] Home screen shows unchecked habits
+- [x] Command palette (⌘K) has entries for Manage, Backfill, Goals, Charts tabs with deep links
 
 ---
 

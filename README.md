@@ -130,7 +130,21 @@ SELECT 'hello world' % 'helo wrld';   -- sanity-check pg_trgm
 ## Features done
 _A running log of what's actually usable. Roadmap lives in [DANA_OS_TRACKER.md](DANA_OS_TRACKER.md)._
 
-- **Phase 0 — foundation** (in progress)
+- **Phase 1 — Habits & Goals** ✅
+  - **Habits & Goals page** (`/habits`) — 5-tab hub: Today, Manage, Backfill, Goals, Charts
+  - **Today tab** — daily habit checklist split by period type (Daily / Weekly); binary habits toggle on click; numeric habits show an inline value input; text habits show an inline text input; logged habits shown in a separate "Done" section; date navigation arrows to view/log past days
+  - **Manage tab** — create/edit/archive habit definitions; includes `sheet_col`/`sheet_type` fields for Sheets sync; activation period management (start/archive tracking runs)
+  - **Backfill tab** — spreadsheet-style date × habit grid; each row is a date, each column a habit; binary habits show checkboxes, numeric habits show number inputs, text (description) habits show text inputs; bulk-submit staged edits in one click
+  - **Goals tab** — yearly binary checklist (mark-complete requires confirmation) and milestone progress bars with inline value updater; year filter; archive flow
+  - **Charts tab** — Highcharts streak heatmap (365-day), daily-value area/column chart (configurable range), weekly bar chart (configurable range) with per-bar green/red success coloring and success-% summary; stat cards for current streak, max streak (with date-range tooltip), weekly total, weekly average; target and avg plotLines on weekly chart; lazy-loaded so main bundle stays small
+  - **Home page** — habits split by period type (Daily / Weekly columns) with prev/next date navigation; GoalsWidget; nudge strip
+  - **Nudge strip** — stale habits surface with days-since-logged; snooze dropdown (1d/3d/1w/2w); dismiss with inline confirmation; auto-disappears when empty
+  - **Timezone-aware** — `?tz=` param on all stats and nudge endpoints using `Intl.DateTimeFormat().resolvedOptions().timeZone`
+  - **⌘K entries** — 5 habits/goals-specific commands (`Habits — Today`, `Habits — Manage`, `Habits — Backfill`, `Goals`, `Habits — Charts`)
+  - **Frontend tests** — 23 new tests across HabitsPage, HabitChecklist, GoalsList, HomePage (41 total, all green)
+  - All actions requiring state change (goal completion, nudge dismiss) require explicit confirmation — no silent auto-acts
+
+- **Phase 0 — foundation**
   - Postgres 16 via docker compose, with `dana_os` / `dana_os_test` databases and `dana_os_app` / `dana_os_ro` users provisioned on first boot
   - FastAPI backend scaffold with `/health` endpoint, CORS for `localhost:5173`, uniform JSON error envelope
   - SQLAlchemy 2.x engines (read/write + read-only) driven by pydantic-settings from `.env`

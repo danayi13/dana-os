@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { SettingsModal } from "./SettingsModal";
 
 const NAV = [
   { to: "/", label: "Home", icon: Home },
@@ -72,6 +73,9 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+      <div className="border-t py-1" style={{ borderColor: "var(--border)" }}>
+        <SettingsModal />
+      </div>
     </aside>
   );
 }

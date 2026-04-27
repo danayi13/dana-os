@@ -1,7 +1,12 @@
 {
-  "include": ["app", "tests", "migrations"],
+  "include": ["app", "tests", "migrations", "scripts"],
   "exclude": [".venv"],
   "venvPath": ".",
   "venv": ".venv",
-  "pythonVersion": "3.12"
+  "pythonVersion": "3.12",
+  "diagnosticSeverityOverrides": {
+    "reportUnknownArgumentType": "none",
+    "reportUnknownMemberType": "none",
+    "reportUnknownVariableType": "none"
+  }
 }

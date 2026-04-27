@@ -39,6 +39,20 @@
 
 /* Class-based dark mode — toggled by ThemeProvider. Also respects system pref
    when no explicit preference has been saved. */
+:root {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+  }
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     --text: #9ca3af;
@@ -80,4 +94,15 @@ body {
 #root {
   display: flex;
   min-height: 100svh;
+}
+
+/* Remove number input spinners globally */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
