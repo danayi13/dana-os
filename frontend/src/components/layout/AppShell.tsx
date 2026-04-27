@@ -3,12 +3,13 @@ import { Outlet } from "react-router-dom";
 import { CommandPalette } from "@/commands/CommandPalette";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
+import { useUserSetting } from "@/lib/useUserSetting";
 
 export function AppShell() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useUserSetting<boolean>("sidebar-open", true);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  const toggleSidebar = useCallback(() => setSidebarOpen((prev) => !prev), []);
+  const toggleSidebar = useCallback(() => setSidebarOpen((prev) => !prev), [setSidebarOpen]);
   const openPalette = useCallback(() => setPaletteOpen(true), []);
   const closePalette = useCallback(() => setPaletteOpen(false), []);
 
@@ -29,7 +30,7 @@ export function AppShell() {
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [setSidebarOpen]);
 
   return (
     <div className="flex h-screen w-full overflow-hidden">

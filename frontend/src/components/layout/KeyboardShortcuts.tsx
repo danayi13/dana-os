@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Keyboard } from "lucide-react";
 import { IconButton } from "@/components/ui/IconButton";
+import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Tooltip } from "@/components/ui/Tooltip";
 
 const SHORTCUTS = [
@@ -38,12 +39,9 @@ export function KeyboardShortcuts() {
           className="absolute right-0 top-full z-40 mt-1 w-56 rounded-lg border py-1 shadow-lg"
           style={{ background: "var(--bg)", borderColor: "var(--border)", boxShadow: "var(--shadow)" }}
         >
-          <p
-            className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text)", opacity: 0.5 }}
-          >
+          <SectionLabel variant="wide" className="px-3 pb-1 pt-2" style={{ opacity: 0.5 }}>
             Keyboard shortcuts
-          </p>
+          </SectionLabel>
           {SHORTCUTS.map(({ keys, description }) => (
             <div key={description} className="flex items-center justify-between px-3 py-1.5">
               <span className="text-sm" style={{ color: "var(--text)" }}>

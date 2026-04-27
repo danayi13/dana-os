@@ -20,9 +20,37 @@ export const NAV_COMMANDS: Command[] = [
   {
     id: "go-habits",
     label: "Habits & Goals",
-    keywords: "habits goals tracking tasks",
+    keywords: "habits goals tracking daily",
     category: "navigate",
     path: "/habits",
+  },
+  {
+    id: "go-habits-manage",
+    label: "Habits — Manage",
+    keywords: "habits manage admin create new habit edit archive activate period",
+    category: "navigate",
+    path: "/habits?tab=manage",
+  },
+  {
+    id: "go-habits-backfill",
+    label: "Habits — Backfill",
+    keywords: "habits backfill past history calendar log previous missed",
+    category: "navigate",
+    path: "/habits?tab=backfill",
+  },
+  {
+    id: "go-habits-goals",
+    label: "Goals",
+    keywords: "goals yearly annual binary milestone progress target",
+    category: "navigate",
+    path: "/habits?tab=goals",
+  },
+  {
+    id: "go-habits-charts",
+    label: "Habits — Charts",
+    keywords: "habits charts streak heatmap visualization stats graph",
+    category: "navigate",
+    path: "/habits?tab=charts",
   },
   {
     id: "go-vocal",

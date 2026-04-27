@@ -56,6 +56,8 @@ def update_goal(goal_id: uuid.UUID, body: GoalUpdate, db: Session = Depends(get_
     goal = _get_goal_or_404(db, goal_id)
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(goal, field, value)
+    if body.status == GoalStatus.active:
+        goal.completed_at = None
     db.commit()
     db.refresh(goal)
     return goal

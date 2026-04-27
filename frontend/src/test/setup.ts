@@ -1,14 +1,24 @@
 import "@testing-library/jest-dom";
+import { beforeEach } from "vitest";
+
+// Highcharts uses CSS.supports internally; jsdom doesn't implement it.
+if (!globalThis.CSS) {
+  // @ts-expect-error stub
+  globalThis.CSS = {};
+}
+if (!globalThis.CSS.supports) {
+  globalThis.CSS.supports = () => false;
+}
 
 // cmdk uses ResizeObserver and scrollIntoView internally; jsdom doesn't include them.
 globalThis.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() { }
+  unobserve() { }
+  disconnect() { }
 };
 
 if (!Element.prototype.scrollIntoView) {
-  Element.prototype.scrollIntoView = () => {};
+  Element.prototype.scrollIntoView = () => { };
 }
 
 // jsdom doesn't implement window.matchMedia; stub it defaulting to light mode.
@@ -18,10 +28,10 @@ Object.defineProperty(globalThis, "matchMedia", {
     matches: false,
     media: query,
     onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
+    addListener: () => { },
+    removeListener: () => { },
+    addEventListener: () => { },
+    removeEventListener: () => { },
     dispatchEvent: () => false,
   }),
 });
@@ -51,4 +61,9 @@ const localStorageMock = (() => {
 Object.defineProperty(globalThis, "localStorage", {
   value: localStorageMock,
   writable: true,
+});
+
+// Clear localStorage before each test so persisted settings don't leak between tests.
+beforeEach(() => {
+  localStorageMock.clear();
 });

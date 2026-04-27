@@ -250,13 +250,19 @@ def update_log(
 
 
 @router.delete("/{habit_id}/logs/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_log(habit_id: uuid.UUID, log_id: uuid.UUID, db: Session = Depends(get_db)) -> None:
-    _get_habit_or_404(db, habit_id)
+def delete_log(
+    habit_id: uuid.UUID,
+    log_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    sheets: SheetsSync = Depends(get_sheets_sync),
+) -> None:
+    habit = _get_habit_or_404(db, habit_id)
     log = db.get(HabitLog, log_id)
     if not log or log.habit_id != habit_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log not found")
     db.delete(log)
     db.commit()
+    _sync_log_to_sheet(sheets, habit, log.date, clear=True)
 
 
 # ── Stats ──────────────────────────────────────────────────────────────────
@@ -287,20 +293,24 @@ def _sync_log_to_sheet(
     sheets: SheetsSync,
     habit: HabitDefinition,
     log_date: date,
-    value: float,
-    notes: str | None,
+    value: float = 0,
+    notes: str | None = None,
+    clear: bool = False,
 ) -> None:
-    """Write a log entry to the habits spreadsheet if the habit has sheet_col configured."""
+    """Write (or clear) a log entry in the habits spreadsheet if the habit has sheet_col configured."""
     cfg: dict[str, str] = habit.period_config or {}
     col = cfg.get("sheet_col")
     if not col:
         return
-    sheet_type = cfg.get("sheet_type", "numeric")
-    if sheet_type == "checkbox":
-        cell_value: object = "TRUE"
-    elif sheet_type == "text":
-        cell_value = notes or ""
+    if clear:
+        cell_value: object = "FALSE" if cfg.get("sheet_type") == "checkbox" else ""
     else:
-        cell_value = value
+        sheet_type = cfg.get("sheet_type", "numeric")
+        if sheet_type == "checkbox":
+            cell_value = "TRUE"
+        elif sheet_type == "text":
+            cell_value = notes or ""
+        else:
+            cell_value = value
     tab = get_settings().habits_sheet_tab
     sheets.write_habit_log(log_date, tab, col, cell_value)

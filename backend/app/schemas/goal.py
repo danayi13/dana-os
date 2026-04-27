@@ -26,6 +26,7 @@ class GoalUpdate(BaseModel):
     current_value: float | None = None
     linked_module: str | None = None
     notes: str | None = None
+    status: GoalStatus | None = None
 
 
 class GoalProgressUpdate(BaseModel):

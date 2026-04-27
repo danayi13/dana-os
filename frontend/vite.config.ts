@@ -43,6 +43,11 @@ export default defineConfig({
       "@": path.resolve(process.cwd(), "./src"),
     },
   },
+  optimizeDeps: {
+    // Force Vite to pre-bundle Highcharts and its modules together so CJS
+    // interop resolves correctly and the module init functions are callable.
+    include: ["highcharts", "highcharts/modules/heatmap", "highcharts-react-official"],
+  },
   test: {
     globals: true,
     environment: "jsdom",

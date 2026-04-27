@@ -1,7 +1,6 @@
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { SearchTrigger } from "./SearchTrigger";
 import { SidebarToggle } from "./SidebarToggle";
-import { ThemeToggle } from "./ThemeToggle";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -18,7 +17,6 @@ export function Header({ onToggleSidebar, onOpenPalette }: HeaderProps) {
       <div className="flex-1" />
       <SearchTrigger onOpen={onOpenPalette} />
       <KeyboardShortcuts />
-      <ThemeToggle />
     </header>
   );
 }
