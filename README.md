@@ -130,6 +130,14 @@ SELECT 'hello world' % 'helo wrld';   -- sanity-check pg_trgm
 ## Features done
 _A running log of what's actually usable. Roadmap lives in [DANA_OS_TRACKER.md](DANA_OS_TRACKER.md)._
 
+- **Phase 2 — Vocal Lesson Tracker** ✅
+  - **Vocal page** (`/vocal`) — two-tab layout: Log and Overview
+  - **Log tab** — entry form with date picker, tag-style repertoire input (press Enter per song), notes textarea; recent lessons list with always-visible notes inline; edit/delete per lesson
+  - **Overview tab** — lessons-per-month Highcharts bar chart; repertoire list with per-piece practice counts; total lessons and this-year stat cards
+  - **Google Sheets sync** — new lessons write to a dedicated vocal spreadsheet (A=date, B=comma-separated songs, C=notes); finds row by date and updates in place, or appends a new row
+  - **Import script** — `scripts/import_vocal_lessons.py` reads existing sheet history and upserts into the DB without writing back to the sheet; supports `--dry-run`
+  - **⌘K entries** — `Vocal — Log` and `Vocal — Overview` deep-link commands
+
 - **Phase 1 — Habits & Goals** ✅
   - **Habits & Goals page** (`/habits`) — 5-tab hub: Today, Manage, Backfill, Goals, Charts
   - **Today tab** — daily habit checklist split by period type (Daily / Weekly); binary habits toggle on click; numeric habits show an inline value input; text habits show an inline text input; logged habits shown in a separate "Done" section; date navigation arrows to view/log past days

@@ -143,13 +143,14 @@
 
 ## Phase 2 — Vocal Lesson Tracker
 
-- [ ] Alembic 0003: `vocal_lessons` (date, repertoire, teacher_notes, reflection, rating)
-- [ ] Backend CRUD + backfill
-- [ ] Entry form (mobile-fast)
-- [ ] Dashboard: frequency, repertoire list, consistency chart, rating trend
-- [ ] Sheets sync (reuses adapter)
-- [ ] Tests: CRUD + Sheets sync
-- [ ] **Success:** log a lesson, see it in spreadsheet, monthly chart renders
+- [x] Alembic 0003: `vocal_lessons` (date, repertoire JSONB list, reflection/notes)
+- [x] Backend CRUD + backfill (upsert by date)
+- [x] Entry form (mobile-fast): date picker, tag-style repertoire input, notes textarea
+- [x] Dashboard: lessons/month frequency bar chart, repertoire list with practice counts, total/this-year stat cards
+- [x] Sheets sync (reuses adapter; separate `VOCAL_SHEET_ID`/`VOCAL_SHEET_TAB` config; columns: A=date, B=songs, C=notes)
+- [x] One-time import script (`scripts/import_vocal_lessons.py`) — reads sheet, upserts to DB, skips sheet write-back
+- [x] Tests: CRUD + backfill + stats + Sheets sync (19 tests)
+- [x] **Success:** log a lesson, see it in spreadsheet, monthly chart renders
 
 ---
 

@@ -60,6 +60,20 @@ export const NAV_COMMANDS: Command[] = [
     path: "/vocal",
   },
   {
+    id: "go-vocal-log",
+    label: "Vocal — Log",
+    keywords: "vocal log lesson entry add new singing practice music",
+    category: "navigate",
+    path: "/vocal?tab=log",
+  },
+  {
+    id: "go-vocal-overview",
+    label: "Vocal — Overview",
+    keywords: "vocal overview charts stats frequency repertoire rating trend music",
+    category: "navigate",
+    path: "/vocal?tab=overview",
+  },
+  {
     id: "go-climbing",
     label: "Climbing",
     keywords: "climbing bouldering rock",

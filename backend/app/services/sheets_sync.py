@@ -109,6 +109,37 @@ class SheetsSync:
         except Exception as exc:
             logger.error("SheetsSync: write_cells failed: %s", exc)
 
+    def write_vocal_lesson(
+        self,
+        lesson_date: date,
+        repertoire: list[str] | None,
+        reflection: str | None,
+        tab: str = "Vocal",
+    ) -> None:
+        """Write a vocal lesson to the sheet.
+
+        Looks up the row by ISO date string in column A; appends a new row if
+        not found. Columns: A=date, B=songs, C=notes.
+        """
+        if not self._enabled:
+            return
+        try:
+            sh = self._gc.open_by_key(self._sheet_id or "")
+            ws = sh.worksheet(tab)
+            date_str = lesson_date.isoformat()
+            col_a: list[str] = ws.col_values(1)  # type: ignore[assignment]
+            row_data = [date_str, ", ".join(repertoire or []), reflection or ""]
+            try:
+                row = col_a.index(date_str) + 1  # 1-based
+                self._write_to_ws(
+                    ws,
+                    [(row, col + 1, val) for col, val in enumerate(row_data)],
+                )
+            except ValueError:
+                ws.append_row(row_data, value_input_option=ValueInputOption.user_entered)
+        except Exception as exc:
+            logger.error("SheetsSync: write_vocal_lesson failed: %s", exc)
+
     def write_habit_log(
         self,
         log_date: date,
