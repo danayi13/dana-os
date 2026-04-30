@@ -44,15 +44,13 @@ export function KeyboardShortcuts() {
           </SectionLabel>
           {SHORTCUTS.map(({ keys, description }) => (
             <div key={description} className="flex items-center justify-between px-3 py-1.5">
-              <span className="text-sm" style={{ color: "var(--text)" }}>
-                {description}
-              </span>
+              <span className="text-sm text-body">{description}</span>
               <span className="flex items-center gap-0.5">
                 {keys.map((k) => (
                   <kbd
                     key={k}
-                    className="rounded border px-1.5 py-0.5 font-mono text-xs"
-                    style={{ borderColor: "var(--border)", background: "var(--code-bg)", color: "var(--text-h)" }}
+                    className="rounded border px-1.5 py-0.5 font-mono text-xs text-heading bg-subtle"
+                    style={{ borderColor: "var(--border)" }}
                   >
                     {k}
                   </kbd>

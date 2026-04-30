@@ -5,6 +5,7 @@ import { HabitChecklist } from "@/components/habits/HabitChecklist";
 import { NudgeStrip } from "@/components/habits/NudgeStrip";
 import { GoalsWidget } from "@/components/goals/GoalsWidget";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
+import { PageTitle } from "@/components/ui/PageTitle";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { fmtDateLong, localDateStr } from "@/lib/dateUtils";
 
@@ -31,25 +32,23 @@ export function HomePage() {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "var(--text-h)" }}>
-          Home
-        </h1>
+        <PageTitle>Home</PageTitle>
         <div className="flex items-center gap-1.5 mt-0.5">
           <button
             onClick={prevDay}
             className="rounded p-0.5 hover:opacity-70 transition-opacity"
             aria-label="Previous day"
           >
-            <ChevronLeft size={14} style={{ color: "var(--text)" }} />
+            <ChevronLeft size={14} className="text-body" />
           </button>
-          <p className="text-sm" style={{ color: "var(--text)" }}>{dateLabel}</p>
+          <p className="text-sm text-body">{dateLabel}</p>
           <button
             onClick={nextDay}
             disabled={isToday}
             className="rounded p-0.5 hover:opacity-70 transition-opacity disabled:opacity-30"
             aria-label="Next day"
           >
-            <ChevronRight size={14} style={{ color: "var(--text)" }} />
+            <ChevronRight size={14} className="text-body" />
           </button>
           {!isToday && (
             <button

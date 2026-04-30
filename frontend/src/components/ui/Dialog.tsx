@@ -30,12 +30,7 @@ export function Dialog({ open, onClose, title, children }: DialogProps) {
         style={{ background: "var(--bg)", border: "1px solid var(--border)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2
-          className="mb-4 text-lg font-semibold"
-          style={{ color: "var(--text-h)" }}
-        >
-          {title}
-        </h2>
+        <h2 className="mb-4 text-lg font-semibold text-heading">{title}</h2>
         {children}
       </div>
     </div>

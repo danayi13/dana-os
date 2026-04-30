@@ -24,7 +24,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <Dialog open={open} onClose={onClose} title={title}>
-      <p className="text-sm mb-4" style={{ color: "var(--text)" }}>{message}</p>
+      <p className="text-sm mb-4 text-body">{message}</p>
       <div className="flex justify-end gap-2">
         <FormButton intent="cancel" onClick={onClose}>Cancel</FormButton>
         <FormButton intent="submit" type="button" onClick={onConfirm} disabled={isPending}>

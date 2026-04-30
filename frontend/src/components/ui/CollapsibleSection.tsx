@@ -19,10 +19,10 @@ export function CollapsibleSection({ icon, title, right, defaultOpen = true, chi
           className="flex items-center gap-2 hover:opacity-70 transition-opacity"
         >
           {open
-            ? <ChevronDown size={14} style={{ color: "var(--text)" }} />
-            : <ChevronRight size={14} style={{ color: "var(--text)" }} />}
+            ? <ChevronDown size={14} className="text-body" />
+            : <ChevronRight size={14} className="text-body" />}
           {icon}
-          <p className="text-sm font-semibold" style={{ color: "var(--text-h)" }}>{title}</p>
+          <p className="text-sm font-semibold text-heading">{title}</p>
         </button>
         {right}
       </div>

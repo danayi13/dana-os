@@ -16,8 +16,8 @@ interface SectionLabelProps {
 export function SectionLabel({ children, variant = "default", className, style }: SectionLabelProps) {
   return (
     <p
-      className={cn(VARIANT_CLASSES[variant], className)}
-      style={{ color: "var(--text)", ...style }}
+      className={cn(VARIANT_CLASSES[variant], "text-body", className)}
+      style={style}
     >
       {children}
     </p>

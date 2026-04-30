@@ -8,7 +8,7 @@ export function EmptyState({ message }: EmptyStateProps) {
       className="rounded-xl border-2 border-dashed p-8 text-center"
       style={{ borderColor: "var(--border)" }}
     >
-      <p className="text-sm" style={{ color: "var(--text)" }}>{message}</p>
+      <p className="text-sm text-body">{message}</p>
     </div>
   );
 }

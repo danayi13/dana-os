@@ -25,8 +25,7 @@ export function SettingsModal() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex w-full items-center gap-2.5 px-4 py-2 text-sm transition-colors hover:opacity-80"
-        style={{ color: "var(--text)" }}
+        className="flex w-full items-center gap-2.5 px-4 py-2 text-sm transition-colors hover:opacity-80 text-body"
       >
         <Settings size={15} strokeWidth={1.6} />
         Settings
@@ -97,8 +96,7 @@ export function SettingsModal() {
               {accentColor && (
                 <button
                   onClick={() => setAccentColor("")}
-                  className="text-xs hover:opacity-70 ml-1"
-                  style={{ color: "var(--text)" }}
+                  className="text-xs hover:opacity-70 ml-1 text-body"
                 >
                   Reset
                 </button>
