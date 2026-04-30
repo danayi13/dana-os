@@ -4,6 +4,8 @@ import { HabitAdmin } from "@/components/habits/HabitAdmin";
 import { BackfillCalendar } from "@/components/habits/BackfillCalendar";
 import { GoalsList } from "@/components/goals/GoalsList";
 import { LoadingText } from "@/components/ui/LoadingText";
+import { PageTitle } from "@/components/ui/PageTitle";
+import { TabBar } from "@/components/ui/TabBar";
 
 const HabitCharts = lazy(() =>
   import("@/components/habits/HabitCharts").then((m) => ({ default: m.HabitCharts }))
@@ -29,35 +31,8 @@ export function HabitsPage() {
   return (
     <div className="space-y-5">
       <div className="max-w-2xl space-y-5">
-        <h1
-          className="text-2xl font-semibold tracking-tight"
-          style={{ color: "var(--text-h)" }}
-        >
-          Habits &amp; Goals
-        </h1>
-
-        <div
-          className="flex gap-1 rounded-xl p-1"
-          style={{ background: "var(--code-bg)" }}
-          role="tablist"
-        >
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className="flex-1 rounded-lg py-1.5 text-sm font-medium transition-all"
-              style={{
-                color: activeTab === tab.id ? "var(--text-h)" : "var(--text)",
-                background: activeTab === tab.id ? "var(--bg)" : "transparent",
-                boxShadow: activeTab === tab.id ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <PageTitle>Habits &amp; Goals</PageTitle>
+        <TabBar tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       </div>
 
       <div role="tabpanel">

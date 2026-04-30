@@ -8,6 +8,13 @@
 @theme {
   --color-accent: #aa3bff;
   --color-accent-bg: rgba(170, 59, 255, 0.1);
+  /* Theme-aware color tokens — reference the :root CSS vars so dark mode works */
+  --color-body: var(--text);
+  --color-heading: var(--text-h);
+  --color-surface: var(--bg);
+  --color-border-color: var(--border);
+  --color-subtle: var(--code-bg);
+  --color-error: #ef4444;
 }
 
 :root {

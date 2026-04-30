@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     google_sheets_credentials_path: str | None = None
     habits_sheet_id: str | None = None
     habits_sheet_tab: str = "2026"
+    vocal_sheet_id: str | None = None
+    vocal_sheet_tab: str = "Voice"
 
 
 @lru_cache(maxsize=1)
