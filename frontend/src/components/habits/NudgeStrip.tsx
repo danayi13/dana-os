@@ -39,10 +39,8 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
       <Bell size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate" style={{ color: "var(--text-h)" }}>
-          {nudge.habit_name}
-        </p>
-        <p className="text-xs" style={{ color: "var(--text)" }}>
+        <p className="text-sm font-medium truncate text-heading">{nudge.habit_name}</p>
+        <p className="text-xs text-body">
           {nudge.last_logged
             ? `Last logged ${nudge.days_since_logged}d ago`
             : "Never logged"}
@@ -59,8 +57,8 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
             }}
             title="Snooze nudge"
             disabled={snoozeMutation.isPending}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-opacity hover:opacity-70 disabled:opacity-40"
-            style={{ color: "var(--text)", border: "1px solid var(--border)" }}
+            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-opacity hover:opacity-70 disabled:opacity-40 text-body"
+            style={{ border: "1px solid var(--border)" }}
           >
             <Clock size={12} />
             Snooze
@@ -75,8 +73,7 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
                 <button
                   key={opt.days}
                   onClick={() => handleSnooze(opt.days)}
-                  className="flex w-full px-3 py-1.5 text-xs hover:opacity-70 text-left"
-                  style={{ color: "var(--text-h)" }}
+                  className="flex w-full px-3 py-1.5 text-xs hover:opacity-70 text-left text-heading"
                 >
                   {opt.label}
                 </button>
@@ -94,8 +91,7 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
             }}
             title="Dismiss nudge"
             disabled={dismissMutation.isPending}
-            className="rounded-md p-1.5 transition-opacity hover:opacity-70 disabled:opacity-40"
-            style={{ color: "var(--text)" }}
+            className="rounded-md p-1.5 transition-opacity hover:opacity-70 disabled:opacity-40 text-body"
           >
             <X size={14} />
           </button>
@@ -109,21 +105,19 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
                 minWidth: "180px",
               }}
             >
-              <p className="text-xs mb-2" style={{ color: "var(--text-h)" }}>
+              <p className="text-xs mb-2 text-heading">
                 Dismiss this nudge? It'll reactivate when you next log this habit.
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setDismissConfirm(false)}
-                  className="text-xs hover:opacity-70"
-                  style={{ color: "var(--text)" }}
+                  className="text-xs hover:opacity-70 text-body"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDismiss}
-                  className="text-xs font-semibold hover:opacity-80"
-                  style={{ color: "#ef4444" }}
+                  className="text-xs font-semibold hover:opacity-80 text-error"
                 >
                   Dismiss
                 </button>

@@ -147,7 +147,7 @@ function AllHabitsGrid() {
     <div className="space-y-4">
       {/* Date range selector */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs font-medium" style={{ color: "var(--text)" }}>Show last</span>
+        <span className="text-xs font-medium text-body">Show last</span>
         {[3, 7, 14, 30].map((n) => (
           <button
             key={n}
@@ -182,7 +182,7 @@ function AllHabitsGrid() {
             if (!isNaN(n) && n >= 1 && n <= 365) setDaysBack(n);
           }}
         />
-        <span className="text-xs" style={{ color: "var(--text)" }}>days</span>
+        <span className="text-xs text-body">days</span>
       </div>
 
       {/* Grid */}
@@ -202,12 +202,12 @@ function AllHabitsGrid() {
               {(habits ?? []).map((h) => (
                 <th
                   key={h.id}
-                  className="text-left text-xs font-medium py-2.5 px-2"
-                  style={{ color: "var(--text-h)", width: isHabitText(h) ? "12rem" : "5rem", maxWidth: isHabitText(h) ? "12rem" : "5rem" }}
+                  className="text-left text-xs font-medium py-2.5 px-2 text-heading"
+                  style={{ width: isHabitText(h) ? "12rem" : "5rem", maxWidth: isHabitText(h) ? "12rem" : "5rem" }}
                 >
                   <div style={{ wordBreak: "break-word" }}>{h.name}</div>
                   {h.unit && habit_display_unit(h) && (
-                    <div className="text-xs font-normal mt-0.5" style={{ color: "var(--text)" }}>
+                    <div className="text-xs font-normal mt-0.5 text-body">
                       {habit_display_unit(h)}
                     </div>
                   )}
@@ -317,8 +317,8 @@ function AllHabitsGrid() {
 
       {/* Footer */}
       <div className="flex items-center justify-between">
-        <span className="text-xs" style={{ color: "var(--text)" }}>
-          Dimmed cells already logged · <span style={{ color: "#ef4444" }}>red</span> = will be deleted
+        <span className="text-xs text-body">
+          Dimmed cells already logged · <span className="text-error">red</span> = will be deleted
         </span>
         <button
           onClick={handleSubmit}

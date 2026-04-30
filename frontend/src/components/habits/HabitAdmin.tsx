@@ -96,18 +96,16 @@ function HabitRow({ habit }: { habit: HabitDefinition }) {
         {/* Left: name + badges + description */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-medium" style={{ color: "var(--text-h)" }}>
-              {habit.name}
-            </span>
+            <span className="text-sm font-medium text-heading">{habit.name}</span>
             <PeriodBadge periodType={habit.period_type} />
             {habit.target != null && (
-              <span className="text-xs" style={{ color: "var(--text)" }}>
+              <span className="text-xs text-body">
                 {habit.target} {habit.unit} {PERIOD_SUFFIX[habit.period_type] ?? ""}
               </span>
             )}
           </div>
           {habit.description && (
-            <p className="text-xs truncate mt-0.5" style={{ color: "var(--text)" }}>
+            <p className="text-xs truncate mt-0.5 text-body">
               {habit.description}
             </p>
           )}
@@ -125,7 +123,7 @@ function HabitRow({ habit }: { habit: HabitDefinition }) {
             </span>
           </div>
           {habit.period_config?.sheet_col && (
-            <p className="text-xs" style={{ color: "var(--text)" }}>
+            <p className="text-xs text-body">
               col {habit.period_config.sheet_col} · {habit.period_config.sheet_type}
             </p>
           )}
@@ -136,8 +134,7 @@ function HabitRow({ habit }: { habit: HabitDefinition }) {
           <Tooltip content="Edit">
             <button
               onClick={() => setEditOpen(true)}
-              className="rounded-md p-1.5 transition-opacity hover:opacity-70"
-              style={{ color: "var(--text)" }}
+              className="rounded-md p-1.5 transition-opacity hover:opacity-70 text-body"
             >
               <Edit2 size={14} />
             </button>
@@ -159,8 +156,7 @@ function HabitRow({ habit }: { habit: HabitDefinition }) {
           <Tooltip content="Delete">
             <button
               onClick={() => setDeleteConfirm(true)}
-              className="rounded-md p-1.5 transition-opacity hover:opacity-70"
-              style={{ color: "var(--text)" }}
+              className="rounded-md p-1.5 transition-opacity hover:opacity-70 text-body"
             >
               <Trash2 size={14} />
             </button>
@@ -178,8 +174,8 @@ function HabitRow({ habit }: { habit: HabitDefinition }) {
       </Dialog>
 
       <Dialog open={deleteConfirm} onClose={() => setDeleteConfirm(false)} title="Delete habit?">
-        <p className="text-sm mb-4" style={{ color: "var(--text)" }}>
-          This will permanently delete <strong style={{ color: "var(--text-h)" }}>{habit.name}</strong>{" "}
+        <p className="text-sm mb-4 text-body">
+          This will permanently delete <strong className="text-heading">{habit.name}</strong>{" "}
           and all its logs.
         </p>
         <div className="flex justify-end gap-2">
@@ -208,23 +204,19 @@ export function HabitAdmin() {
   }
 
   if (isLoading) {
-    return <p className="text-sm" style={{ color: "var(--text)" }}>Loading habits…</p>;
+    return <p className="text-sm text-body">Loading habits…</p>;
   }
 
   if (error) {
     return (
-      <p className="text-sm" style={{ color: "#ef4444" }}>
-        Failed to load habits. Is the backend running?
-      </p>
+      <p className="text-sm text-error">Failed to load habits. Is the backend running?</p>
     );
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm" style={{ color: "var(--text)" }}>
-          {habits?.length ?? 0} habit{habits?.length !== 1 ? "s" : ""} defined
-        </p>
+        <p className="text-sm text-body">{habits?.length ?? 0} habit{habits?.length !== 1 ? "s" : ""} defined</p>
         <button
           onClick={() => setCreateOpen(true)}
           className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold transition-opacity hover:opacity-80"

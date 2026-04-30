@@ -19,8 +19,7 @@ export function Select({ className = "w-full", style, children, ...props }: Sele
       </select>
       <ChevronDown
         size={14}
-        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2"
-        style={{ color: "var(--text)" }}
+        className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-body"
       />
     </div>
   );

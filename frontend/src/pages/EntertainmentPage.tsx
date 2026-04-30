@@ -1,10 +1,10 @@
+import { PageTitle } from "@/components/ui/PageTitle";
+
 export function EntertainmentPage() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-1" style={{ color: "var(--text-h)" }}>
-        Entertainment
-      </h1>
-      <p style={{ color: "var(--text)" }}>Coming soon.</p>
+      <PageTitle className="mb-1">Entertainment</PageTitle>
+      <p className="text-body">Coming soon.</p>
     </div>
   );
 }

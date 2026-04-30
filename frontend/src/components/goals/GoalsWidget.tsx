@@ -36,9 +36,7 @@ function MilestoneCard({ goal }: { goal: Goal }) {
     >
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate" style={{ color: "var(--text-h)" }}>
-            {goal.name}
-          </p>
+          <p className="text-sm font-medium truncate text-heading">{goal.name}</p>
           {goal.target_value != null && (
             <div className="mt-1.5">
               <ProgressBar
@@ -62,9 +60,7 @@ function MilestoneCard({ goal }: { goal: Goal }) {
             style={{ borderColor: isDirty ? "var(--accent-border)" : "var(--border)" }}
           />
           {goal.target_value != null && (
-            <span className="text-xs" style={{ color: "var(--text)" }}>
-              / {goal.target_value}
-            </span>
+            <span className="text-xs text-body">/ {goal.target_value}</span>
           )}
           <button
             onClick={handleSave}
@@ -109,12 +105,11 @@ function BinaryCard({ goal }: { goal: Goal }) {
           >
             {isCompleted
               ? <CheckCircle2 size={18} style={{ color: "var(--accent)" }} />
-              : <Circle size={18} style={{ color: "var(--text)" }} />}
+              : <Circle size={18} className="text-body" />}
           </button>
           <p
-            className="flex-1 text-sm font-medium truncate"
+            className="flex-1 text-sm font-medium truncate text-heading"
             style={{
-              color: "var(--text-h)",
               textDecoration: isCompleted ? "line-through" : "none",
               opacity: isCompleted ? 0.7 : 1,
             }}
@@ -133,7 +128,7 @@ function BinaryCard({ goal }: { goal: Goal }) {
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         title="Mark goal complete?"
-        message={<>Mark <strong style={{ color: "var(--text-h)" }}>{goal.name}</strong> as completed?</>}
+        message={<>Mark <strong className="text-heading">{goal.name}</strong> as completed?</>}
         onConfirm={() => completeMutation.mutate(goal.id, { onSuccess: () => setConfirmOpen(false) })}
         confirmLabel="Mark complete ✓"
         isPending={completeMutation.isPending}
@@ -144,7 +139,7 @@ function BinaryCard({ goal }: { goal: Goal }) {
         open={unconfirmOpen}
         onClose={() => setUnconfirmOpen(false)}
         title="Mark goal incomplete?"
-        message={<>Move <strong style={{ color: "var(--text-h)" }}>{goal.name}</strong> back to active?</>}
+        message={<>Move <strong className="text-heading">{goal.name}</strong> back to active?</>}
         onConfirm={() => uncompleteMutation.mutate(goal.id, { onSuccess: () => setUnconfirmOpen(false) })}
         confirmLabel="Mark incomplete"
         isPending={uncompleteMutation.isPending}

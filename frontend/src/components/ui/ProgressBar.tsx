@@ -18,7 +18,7 @@ export function ProgressBar({ current, target, direction }: ProgressBarProps) {
           style={{ width: `${pct}%`, background: isGood && pct >= 100 ? "#22c55e" : "var(--accent)" }}
         />
       </div>
-      <span className="text-xs tabular-nums shrink-0" style={{ color: "var(--text)", minWidth: "36px" }}>
+      <span className="text-xs tabular-nums shrink-0 text-body" style={{ minWidth: "36px" }}>
         {pct}%
       </span>
     </div>

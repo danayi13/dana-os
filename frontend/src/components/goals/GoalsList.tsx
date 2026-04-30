@@ -80,7 +80,7 @@ function GoalRow({ goal }: { goal: Goal }) {
             className="mt-0.5 shrink-0 transition-opacity hover:opacity-70"
             aria-label="Mark complete"
           >
-            <Circle size={20} style={{ color: "var(--text)" }} />
+            <Circle size={20} className="text-body" />
           </button>
         )}
         {goal.type === "binary" && isCompleted && (
@@ -95,9 +95,8 @@ function GoalRow({ goal }: { goal: Goal }) {
 
         <div className="flex-1 min-w-0">
           <p
-            className="text-sm font-medium"
+            className="text-sm font-medium text-heading"
             style={{
-              color: "var(--text-h)",
               textDecoration: isCompleted ? "line-through" : "none",
               opacity: isCompleted ? 0.7 : 1,
             }}
@@ -105,13 +104,13 @@ function GoalRow({ goal }: { goal: Goal }) {
             {goal.name}
           </p>
           {goal.notes && (
-            <p className="text-xs mt-0.5" style={{ color: "var(--text)" }}>{goal.notes}</p>
+            <p className="text-xs mt-0.5 text-body">{goal.notes}</p>
           )}
 
           {/* Milestone progress */}
           {goal.type === "milestone" && goal.target_value != null && (
             <div className="mt-2 space-y-1">
-              <div className="flex items-center justify-between text-xs" style={{ color: "var(--text)" }}>
+              <div className="flex items-center justify-between text-xs text-body">
                 <span>{goal.current_value ?? 0} / {goal.target_value}</span>
                 {goal.linked_module && <span>via {goal.linked_module}</span>}
               </div>
@@ -146,15 +145,13 @@ function GoalRow({ goal }: { goal: Goal }) {
             )}
             <button
               onClick={() => setEditOpen(true)}
-              className="rounded-md p-1.5 hover:opacity-70"
-              style={{ color: "var(--text)" }}
+              className="rounded-md p-1.5 hover:opacity-70 text-body"
             >
               <Edit2 size={13} />
             </button>
             <button
               onClick={() => setArchiveConfirm(true)}
-              className="rounded-md p-1.5 hover:opacity-70"
-              style={{ color: "var(--text)" }}
+              className="rounded-md p-1.5 hover:opacity-70 text-body"
             >
               <Archive size={13} />
             </button>
@@ -188,8 +185,7 @@ function GoalRow({ goal }: { goal: Goal }) {
           </button>
           <button
             onClick={() => setProgressEdit(false)}
-            className="text-xs hover:opacity-70"
-            style={{ color: "var(--text)" }}
+            className="text-xs hover:opacity-70 text-body"
           >
             ✕
           </button>
@@ -200,7 +196,7 @@ function GoalRow({ goal }: { goal: Goal }) {
         open={completeConfirm}
         onClose={() => setCompleteConfirm(false)}
         title="Mark goal complete?"
-        message={<>Mark <strong style={{ color: "var(--text-h)" }}>{goal.name}</strong> as completed?</>}
+        message={<>Mark <strong className="text-heading">{goal.name}</strong> as completed?</>}
         onConfirm={handleComplete}
         confirmLabel="Mark complete ✓"
         isPending={completeMutation.isPending}
@@ -211,7 +207,7 @@ function GoalRow({ goal }: { goal: Goal }) {
         open={uncompleteConfirm}
         onClose={() => setUncompleteConfirm(false)}
         title="Mark goal incomplete?"
-        message={<>Move <strong style={{ color: "var(--text-h)" }}>{goal.name}</strong> back to active?</>}
+        message={<>Move <strong className="text-heading">{goal.name}</strong> back to active?</>}
         onConfirm={() => uncompleteMutation.mutate(goal.id, { onSuccess: () => setUncompleteConfirm(false) })}
         confirmLabel="Mark incomplete"
         isPending={uncompleteMutation.isPending}
@@ -224,8 +220,8 @@ function GoalRow({ goal }: { goal: Goal }) {
         onClose={() => setArchiveConfirm(false)}
         title="Archive goal?"
       >
-        <p className="text-sm mb-4" style={{ color: "var(--text)" }}>
-          Archive <strong style={{ color: "var(--text-h)" }}>{goal.name}</strong>? History is preserved.
+        <p className="text-sm mb-4 text-body">
+          Archive <strong className="text-heading">{goal.name}</strong>? History is preserved.
         </p>
         <div className="flex justify-end gap-2">
           <FormButton intent="cancel" onClick={() => setArchiveConfirm(false)}>Cancel</FormButton>
@@ -278,7 +274,7 @@ export function GoalsList() {
 
   if (error) {
     return (
-      <p className="text-sm py-2" style={{ color: "#ef4444" }}>
+      <p className="text-sm py-2 text-error">
         Failed to load goals.
       </p>
     );
@@ -294,7 +290,7 @@ export function GoalsList() {
           ))}
         </Select>
 
-        <label className="flex items-center gap-1.5 text-sm cursor-pointer" style={{ color: "var(--text)" }}>
+        <label className="flex items-center gap-1.5 text-sm cursor-pointer text-body">
           <input
             type="checkbox"
             checked={showArchived}
