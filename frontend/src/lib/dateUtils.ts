@@ -28,3 +28,12 @@ export function dateRange(daysBack: number): { start: string; end: string } {
   start.setDate(start.getDate() - daysBack);
   return { start: localDateStr(start), end: localDateStr(end) };
 }
+
+export function minutesToHours(minutes: number | null | undefined): string {
+  if (minutes == null) return "—";
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}

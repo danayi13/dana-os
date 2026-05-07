@@ -76,9 +76,30 @@ export const NAV_COMMANDS: Command[] = [
   {
     id: "go-climbing",
     label: "Climbing",
-    keywords: "climbing bouldering rock",
+    keywords: "climbing bouldering rock gym sessions grades",
     category: "navigate",
     path: "/climbing",
+  },
+  {
+    id: "go-climbing-log",
+    label: "Climbing — Log Session",
+    keywords: "climbing log session entry add new bouldering gym",
+    category: "navigate",
+    path: "/climbing?tab=log",
+  },
+  {
+    id: "go-climbing-dashboard",
+    label: "Climbing — Dashboard",
+    keywords: "climbing dashboard charts stats grade progression monthly volume gym breakdown milestones",
+    category: "navigate",
+    path: "/climbing?tab=dashboard",
+  },
+  {
+    id: "go-climbing-gyms",
+    label: "Climbing — Gyms",
+    keywords: "climbing gyms admin manage add recurring infrequent",
+    category: "navigate",
+    path: "/climbing?tab=gyms",
   },
   {
     id: "go-entertainment",

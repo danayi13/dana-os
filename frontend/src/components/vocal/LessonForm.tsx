@@ -6,6 +6,7 @@ import { FormTextareaField } from "@/components/ui/FormTextareaField";
 import { FormFieldLabel } from "@/components/ui/FormFieldLabel";
 import { Tag } from "@/components/ui/Tag";
 import type { VocalLesson, VocalLessonCreate, VocalLessonUpdate } from "@/lib/vocal-api";
+import { localDateStr } from "@/lib/dateUtils";
 
 interface Props {
   initial?: VocalLesson;
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export function LessonForm({ initial, onSubmit, isLoading, submitLabel = "Save" }: Props) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = localDateStr(new Date());
   const [date, setDate] = useState(initial?.date ?? today);
   const [repertoire, setRepertoire] = useState<string[]>(initial?.repertoire ?? []);
   const [pieceInput, setPieceInput] = useState("");

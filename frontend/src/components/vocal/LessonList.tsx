@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Dialog } from "@/components/ui/Dialog";
 import { LessonForm } from "./LessonForm";
 import { useDeleteLesson, useUpdateLesson, type VocalLesson } from "@/lib/vocal-api";
+import { useSheetUrls } from "@/lib/config-api";
 
 interface Props {
   lessons: VocalLesson[];
@@ -17,6 +18,7 @@ export function LessonList({ lessons }: Props) {
 
   const deleteLesson = useDeleteLesson();
   const updateLesson = useUpdateLesson();
+  const { data: sheetUrls } = useSheetUrls();
 
   if (lessons.length === 0) {
     return <p className="text-sm text-body">No lessons logged yet.</p>;
@@ -75,7 +77,19 @@ export function LessonList({ lessons }: Props) {
         <ConfirmDialog
           open
           title="Delete lesson"
-          message={`Delete the lesson logged on ${deleting.date}? This cannot be undone.`}
+          message={
+            <span>
+              Delete the lesson logged on {deleting.date}? This cannot be undone.{" "}
+              <span className="block mt-1 text-xs text-error">
+                Remember to also delete this row from{" "}
+                {sheetUrls?.vocal ? (
+                  <a href={sheetUrls.vocal} target="_blank" rel="noreferrer" className="underline hover:opacity-70">
+                    the sheet
+                  </a>
+                ) : "the sheet"}.
+              </span>
+            </span>
+          }
           confirmLabel="Delete"
           isPending={deleteLesson.isPending}
           onConfirm={() => {

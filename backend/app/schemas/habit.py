@@ -71,6 +71,7 @@ class HabitLogCreate(BaseModel):
     date: date
     value: float = Field(default=1.0, gt=0)
     notes: str | None = None
+    force_sheet_sync: bool = False
 
 
 class HabitLogUpdate(BaseModel):

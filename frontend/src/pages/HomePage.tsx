@@ -62,6 +62,8 @@ export function HomePage() {
         </div>
       </div>
 
+      <NudgeStrip />
+
       <CollapsibleSection
         icon={<CheckSquare size={15} style={{ color: "var(--accent)" }} />}
         title="Today's habits"
@@ -85,8 +87,6 @@ export function HomePage() {
       </CollapsibleSection>
 
       <GoalsWidget />
-
-      <NudgeStrip />
     </div>
   );
 }

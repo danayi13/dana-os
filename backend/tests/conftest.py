@@ -13,6 +13,7 @@ Strategy:
 
 from collections.abc import Generator
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from alembic import command
@@ -20,10 +21,17 @@ from alembic.config import Config
 from app.config import get_settings
 from app.db import get_db
 from app.main import app
+from app.services.sheets_sync import SheetsSync
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session, sessionmaker
+
+
+def _noop_sheets_init(self: SheetsSync, *args: object, **kwargs: object) -> None:
+    self._enabled = False  # type: ignore[attr-defined]
+    self._sheet_id = None  # type: ignore[attr-defined]
+
 
 _BACKEND_DIR = Path(__file__).resolve().parents[1]
 _TEST_DB_NAME = "dana_os_test"
@@ -100,12 +108,17 @@ def db(test_engine: Engine) -> Generator[Session, None, None]:
 
 @pytest.fixture()
 def client(db: Session) -> Generator[TestClient, None, None]:
-    """TestClient with the real DB dependency overridden to use the test session."""
+    """TestClient with the DB dependency overridden to the test session.
+
+    Patches SheetsSync.__init__ at the class level so every SheetsSync
+    instance created during the test (regardless of which dependency
+    function produces it) is a no-op. New sheet modules need no changes here.
+    """
 
     def override_get_db() -> Generator[Session, None, None]:
         yield db
 
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as c:
+    with patch.object(SheetsSync, "__init__", _noop_sheets_init), TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

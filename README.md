@@ -130,6 +130,18 @@ SELECT 'hello world' % 'helo wrld';   -- sanity-check pg_trgm
 ## Features done
 _A running log of what's actually usable. Roadmap lives in [DANA_OS_TRACKER.md](DANA_OS_TRACKER.md)._
 
+- **Phase 3 — Climbing Tracker** ✅
+  - **Climbing page** (`/climbing`) — three-tab layout: Log, Dashboard, Gyms
+  - **Log tab** — session entry form (date, gym, duration, V-grade V0–V17, companions tag input, notes); recent sessions list with inline edit (pencil → pre-filled dialog) and delete; delete confirmation includes a red reminder to remove the sheet row manually
+  - **Dashboard tab** — grade progression Highcharts line chart; monthly volume Highcharts column chart; gym breakdown (visits + time horizontal bar charts + last-visit detail table split by recurring/infrequent); climbing partners (sessions-per-partner bar chart + table with last-climbed); grade milestones (first session per V-grade)
+  - **Gyms tab** — gym admin (add/edit/delete, split by recurring/infrequent); reminder settings panel with configurable interval and countdown to next due date
+  - **Staleness nudge** — configurable reminder interval (default 14d); snooze (1d/3d/1w/2w) and dismiss; amber banner on the Climbing page and a nudge card in the home-page nudge strip; nudge auto-resets when a new session is logged
+  - **Google Sheets sync** — new/edited sessions write to climbing sheet (C=date, E=gym, F=duration as HH:mm:ss, G=companions, H=notes); looks up existing rows by date serial number via `ValueRenderOption.unformatted` so any cell display format works; skips formula columns B (session #) and D (days since last) via formula detector
+  - **Companion stats** — session counts per partner aggregated from JSONB companions array via Postgres lateral unnest; displayed as bar chart + table
+  - **Import script** — `backend/scripts/onboard_climbing_from_sheet.py` reads a Google Sheet and upserts sessions to the DB; safe to re-run (skips existing dates); `--dry-run` by default, `--commit` to write
+  - **⌘K entries** — `Climbing — Log`, `Climbing — Dashboard`, `Climbing — Gyms` deep-link commands
+  - **Tests** — 45 tests covering gym CRUD, session CRUD, stats, nudge/reminder config, sheets graceful degradation, companion stats, session 404s, invalid gym_id
+
 - **Phase 2 — Vocal Lesson Tracker** ✅
   - **Vocal page** (`/vocal`) — two-tab layout: Log and Overview
   - **Log tab** — entry form with date picker, tag-style repertoire input (press Enter per song), notes textarea; recent lessons list with always-visible notes inline; edit/delete per lesson

@@ -22,6 +22,7 @@ function AllHabitsGrid() {
   const habits = _habits ? sortBySheetCol(_habits) : _habits;
   const [daysBack, setDaysBack] = useState(7);
   const [values, setValues] = useState<GridValues>({});
+  const [syncDates, setSyncDates] = useState<Set<string>>(new Set());
   const backfillAll = useBackfillAllHabits();
   const deleteLogs = useDeleteLogs();
 
@@ -99,23 +100,35 @@ function AllHabitsGrid() {
   }
 
   const entryList = useMemo(() => {
-    const entries: { habitId: string; date: string; value: number; notes?: string }[] = [];
+    const entries: { habitId: string; date: string; value: number; notes?: string; force_sheet_sync?: boolean }[] = [];
     for (const date of dates) {
+      const isSyncDate = syncDates.has(date);
       for (const habit of habits ?? []) {
         const raw = values[date]?.[habit.id] ?? "";
+        const existing = existingLogs[date]?.[habit.id];
         if (isHabitNumeric(habit)) {
           const v = parseFloat(raw);
-          if (!isNaN(v)) entries.push({ habitId: habit.id, date, value: v });
+          if (!isNaN(v)) {
+            entries.push({ habitId: habit.id, date, value: v, ...(isSyncDate ? { force_sheet_sync: true } : {}) });
+          } else if (isSyncDate && existing) {
+            entries.push({ habitId: habit.id, date, value: existing.value, force_sheet_sync: true });
+          }
         } else if (isHabitText(habit)) {
           const v = raw.trim();
-          if (v) entries.push({ habitId: habit.id, date, value: 1, notes: v });
+          if (v) {
+            entries.push({ habitId: habit.id, date, value: 1, notes: v, ...(isSyncDate ? { force_sheet_sync: true } : {}) });
+          } else if (isSyncDate && existing) {
+            entries.push({ habitId: habit.id, date, value: 1, notes: existing.notes, force_sheet_sync: true });
+          }
         } else if (raw) {
-          entries.push({ habitId: habit.id, date, value: 1 });
+          entries.push({ habitId: habit.id, date, value: 1, ...(isSyncDate ? { force_sheet_sync: true } : {}) });
+        } else if (isSyncDate && existing) {
+          entries.push({ habitId: habit.id, date, value: existing.value, force_sheet_sync: true });
         }
       }
     }
     return entries;
-  }, [values, dates, habits]);
+  }, [values, dates, habits, syncDates, existingLogs]);
 
   const deletionList = useMemo(() => {
     const list: { habitId: string; logId: string }[] = [];
@@ -133,7 +146,7 @@ function AllHabitsGrid() {
 
   function handleSubmit() {
     if (entryList.length === 0 && deletionList.length === 0) return;
-    const after = () => setValues({});
+    const after = () => { setValues({}); setSyncDates(new Set()); };
     if (deletionList.length > 0 && entryList.length > 0) {
       deleteLogs.mutate(deletionList, { onSuccess: () => backfillAll.mutate(entryList, { onSuccess: after }) });
     } else if (deletionList.length > 0) {
@@ -194,8 +207,15 @@ function AllHabitsGrid() {
           <thead>
             <tr style={{ borderBottom: "1px solid var(--border)" }}>
               <th
-                className="sticky left-0 z-10 text-left text-xs font-medium py-2.5 px-3 whitespace-nowrap"
-                style={{ background: "var(--bg)", color: "var(--text)", width: "9rem" }}
+                className="sticky left-0 z-10 text-center text-xs font-medium py-2.5 px-2 text-body"
+                style={{ background: "var(--bg)", width: "3rem" }}
+                title="Re-publish row to Google Sheets"
+              >
+                Sync
+              </th>
+              <th
+                className="sticky z-10 text-left text-xs font-medium py-2.5 px-3 whitespace-nowrap"
+                style={{ background: "var(--bg)", color: "var(--text)", width: "9rem", left: "3rem" }}
               >
                 Date
               </th>
@@ -221,11 +241,28 @@ function AllHabitsGrid() {
                 key={date}
                 style={{ borderTop: dateIdx > 0 ? "1px solid var(--border)" : undefined }}
               >
+                <td className="sticky left-0 z-10 py-1.5 px-2" style={{ background: "var(--bg)" }}>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => setSyncDates((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(date)) { next.delete(date); } else { next.add(date); }
+                        return next;
+                      })}
+                      className="hover:opacity-70 transition-opacity"
+                      title="Re-publish this date to Google Sheets"
+                      style={{ color: syncDates.has(date) ? "var(--accent)" : "var(--border)" }}
+                    >
+                      {syncDates.has(date) ? <CheckSquare size={16} /> : <Square size={16} />}
+                    </button>
+                  </div>
+                </td>
                 <td
-                  className="sticky left-0 z-10 text-xs font-medium py-2 px-3 whitespace-nowrap"
+                  className="sticky z-10 text-xs font-medium py-2 px-3 whitespace-nowrap"
                   style={{
                     background: "var(--bg)",
                     color: date === today ? "var(--accent)" : "var(--text-h)",
+                    left: "3rem",
                   }}
                 >
                   {date === today ? "Today" : fmtDateShort(date)}
@@ -318,7 +355,7 @@ function AllHabitsGrid() {
       {/* Footer */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-body">
-          Dimmed cells already logged · <span className="text-error">red</span> = will be deleted
+          Dimmed = already logged · <span className="text-error">red</span> = will be deleted · Sync = re-publish row to sheet
         </span>
         <button
           onClick={handleSubmit}

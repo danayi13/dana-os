@@ -8,6 +8,7 @@ import { PageTitle } from "@/components/ui/PageTitle";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TabBar } from "@/components/ui/TabBar";
 import { useVocalLessons, useCreateLesson } from "@/lib/vocal-api";
+import { useSheetUrls } from "@/lib/config-api";
 
 const TABS = [
   { id: "log", label: "Log" },
@@ -19,10 +20,11 @@ type TabId = "log" | "overview";
 export function VocalPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get("tab") as TabId | null) ?? "log";
+  const { data: sheetUrls } = useSheetUrls();
 
   return (
     <div className="max-w-2xl space-y-5">
-      <PageTitle>Vocal Lessons</PageTitle>
+      <PageTitle sheetUrl={sheetUrls?.vocal} sheetLabel="Vocal Spreadsheet">Vocal Lessons</PageTitle>
       <TabBar tabs={TABS} activeTab={activeTab} onChange={(tab) => setSearchParams({ tab }, { replace: true })} />
       {activeTab === "log" && <LogTab />}
       {activeTab === "overview" && <VocalOverview />}

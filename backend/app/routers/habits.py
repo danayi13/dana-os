@@ -190,7 +190,7 @@ def log_habit(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Log already exists for {body.date}. Use PATCH to update.",
         )
-    log = HabitLog(habit_id=habit_id, **body.model_dump())
+    log = HabitLog(habit_id=habit_id, **body.model_dump(exclude={"force_sheet_sync"}))
     db.add(log)
     nudge_svc.reset_if_exists(db, "habit", habit_id)
     db.commit()
@@ -209,6 +209,7 @@ def backfill_logs(
     """Upsert multiple log entries — creates missing, skips existing."""
     habit = _get_habit_or_404(db, habit_id)
     created: list[HabitLog] = []
+    resync: list[HabitLog] = []
     for entry in entries:
         existing = (
             db.execute(
@@ -218,8 +219,10 @@ def backfill_logs(
             .first()
         )
         if existing:
+            if entry.force_sheet_sync:
+                resync.append(existing)
             continue
-        log = HabitLog(habit_id=habit_id, **entry.model_dump())
+        log = HabitLog(habit_id=habit_id, **entry.model_dump(exclude={"force_sheet_sync"}))
         db.add(log)
         created.append(log)
     if created:
@@ -227,6 +230,8 @@ def backfill_logs(
     db.commit()
     for log in created:
         db.refresh(log)
+        _sync_log_to_sheet(sheets, habit, log.date, log.value, log.notes)
+    for log in resync:
         _sync_log_to_sheet(sheets, habit, log.date, log.value, log.notes)
     return created
 

@@ -156,14 +156,14 @@
 
 ## Phase 3 — Climbing Tracker
 
-- [ ] Alembic 0004: `gyms` lookup, `climbing_sessions` (date, gym_id, duration, max_grade, avg_grade, notes)
-- [ ] Gym admin (add new gyms)
-- [ ] Session entry form
-- [ ] Dashboard: grade progression, monthly volume, gym breakdown
-- [ ] Configurable staleness nudge (reuses Phase 1 engine)
-- [ ] Sheets sync
-- [ ] Tests: CRUD, gym lookup, nudge logic
-- [ ] **Success:** log session, progression chart, nudge fires after rest period
+- [x] Alembic 0004: `gyms` lookup (recurring/infrequent), `climbing_sessions` (date, gym_id, duration, max_grade nullable, companions, notes)
+- [x] Gym admin (add/edit/delete gyms, split by recurring/infrequent)
+- [x] Session entry form (V-grade enum V0–V17, optional grade for old sessions)
+- [x] Dashboard: grade progression (Highcharts line), monthly volume (Highcharts column), gym breakdown table, grade milestones (first-per-grade)
+- [x] Configurable staleness nudge (reuses Phase 1 engine; default 14d; interval picker in UI)
+- [x] Sheets sync (`write_climbing_session`: cols C=date, E=gym, F=duration, G=companions, H=notes; skips formula cols B+D)
+- [x] Tests: 45 tests — gym CRUD, session CRUD, stats, nudge, reminder config, sheets graceful degradation, companion stats, session 404s, invalid gym_id
+- [x] **Success:** log session, progression chart, nudge fires after rest period — *onboard sheet after testing*
 
 ---
 

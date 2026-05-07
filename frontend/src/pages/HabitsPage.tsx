@@ -6,6 +6,7 @@ import { GoalsList } from "@/components/goals/GoalsList";
 import { LoadingText } from "@/components/ui/LoadingText";
 import { PageTitle } from "@/components/ui/PageTitle";
 import { TabBar } from "@/components/ui/TabBar";
+import { useSheetUrls } from "@/lib/config-api";
 
 const HabitCharts = lazy(() =>
   import("@/components/habits/HabitCharts").then((m) => ({ default: m.HabitCharts }))
@@ -23,6 +24,7 @@ type TabId = (typeof TABS)[number]["id"];
 export function HabitsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get("tab") as TabId | null) ?? "charts";
+  const { data: sheetUrls } = useSheetUrls();
 
   function setActiveTab(tab: TabId) {
     setSearchParams({ tab }, { replace: true });
@@ -31,7 +33,7 @@ export function HabitsPage() {
   return (
     <div className="space-y-5">
       <div className="max-w-2xl space-y-5">
-        <PageTitle>Habits &amp; Goals</PageTitle>
+        <PageTitle sheetUrl={sheetUrls?.habits} sheetLabel="Habits Spreadsheet">Habits &amp; Goals</PageTitle>
         <TabBar tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       </div>
 

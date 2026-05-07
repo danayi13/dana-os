@@ -16,3 +16,9 @@ def get_sheets_sync() -> SheetsSync:
 def get_vocal_sheets_sync() -> SheetsSync:
     s = get_settings()
     return SheetsSync(s.google_sheets_credentials_path, s.vocal_sheet_id)
+
+
+@lru_cache(maxsize=1)
+def get_climbing_sheets_sync() -> SheetsSync:
+    s = get_settings()
+    return SheetsSync(s.google_sheets_credentials_path, s.climbing_sheet_id)

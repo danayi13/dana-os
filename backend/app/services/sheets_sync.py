@@ -24,7 +24,15 @@ logger = logging.getLogger(__name__)
 
 def _format_sheet_date(d: date) -> str:
     """Format date to match the Sheets display value: 'Monday, Apr 21'."""
-    return d.strftime("%A, %b") + f" {d.day}"
+    return d.strftime("%A, %b %d")
+
+
+_GS_EPOCH = date(1899, 12, 30)
+
+
+def _date_to_gs_serial(d: date) -> float:
+    """Convert a date to a Google Sheets serial number (days since Dec 30, 1899)."""
+    return float((d - _GS_EPOCH).days)
 
 
 def _col_letter_to_int(col: str) -> int:
@@ -139,6 +147,72 @@ class SheetsSync:
                 ws.append_row(row_data, value_input_option=ValueInputOption.user_entered)
         except Exception as exc:
             logger.error("SheetsSync: write_vocal_lesson failed: %s", exc)
+
+    def write_climbing_session(
+        self,
+        session_date: date,
+        gym_name: str | None,
+        duration_minutes: int | None,
+        companions: list[str] | None,
+        notes: str | None,
+        tab: str = "Climbing",
+    ) -> None:
+        """Write a climbing session to the sheet.
+
+        Sheet layout (columns B-H, no column A data):
+          B — session number (formula, skipped)
+          C — date (ISO string, used as lookup key)
+          D — days since last session (formula, skipped)
+          E — gym name
+          F — duration (HH:mm:ss)
+          G — companions
+          H — notes
+
+        Looks up existing row by date in column C; appends a new row if
+        not found. Formula cells (B and D) are skipped via the formula
+        detector — on append they remain blank.
+        """
+        if not self._enabled:
+            return
+        try:
+            sh = self._gc.open_by_key(self._sheet_id or "")
+            ws = sh.worksheet(tab)
+            if duration_minutes is not None:
+                h, m = divmod(duration_minutes, 60)
+                duration_str = f"{h}:{m:02d}:00"
+            else:
+                duration_str = ""
+            companions_str = ", ".join(companions) if companions else ""
+
+            # Use unformatted values so date cells return serial numbers regardless
+            # of how the column is formatted (e.g. "5/6/2026" vs "Monday, May 06").
+            date_iso = session_date.isoformat()
+            date_serial = _date_to_gs_serial(session_date)
+            col_c_raw = ws.col_values(3, value_render_option=ValueRenderOption.unformatted)  # type: ignore[call-arg]
+
+            # Writable columns (1-based): C=3, E=5, F=6, G=7, H=8.
+            # B (session#) and D (days since last) are formula columns — never written.
+            try:
+                row = col_c_raw.index(date_serial) + 1
+            except ValueError:
+                # Fallback: text ISO string written by old code versions.
+                try:
+                    row = col_c_raw.index(date_iso) + 1
+                except ValueError:
+                    row = len(col_c_raw) + 1
+
+            self._write_to_ws(
+                ws,
+                [
+                    (row, 3, date_iso),
+                    (row, 5, gym_name or ""),
+                    (row, 6, duration_str),
+                    (row, 7, companions_str),
+                    (row, 8, notes or ""),
+                ],
+            )
+        except Exception as exc:
+            logger.error("SheetsSync: write_climbing_session failed: %s", exc)
 
     def write_habit_log(
         self,

@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     habits_sheet_tab: str = "2026"
     vocal_sheet_id: str | None = None
     vocal_sheet_tab: str = "Voice"
+    climbing_sheet_id: str | None = None
+    climbing_sheet_tab: str = "Climbing"
 
 
 @lru_cache(maxsize=1)

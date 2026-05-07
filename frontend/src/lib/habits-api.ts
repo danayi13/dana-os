@@ -54,6 +54,7 @@ export interface HabitLogCreate {
   date: string;
   value: number;
   notes?: string;
+  force_sheet_sync?: boolean;
 }
 
 export const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -187,12 +188,12 @@ export function useLogHabit(habitId: string) {
 export function useBackfillAllHabits() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (entries: { habitId: string; date: string; value: number; notes?: string }[]) => {
+    mutationFn: (entries: { habitId: string; date: string; value: number; notes?: string; force_sheet_sync?: boolean }[]) => {
       // Group by habitId so we fire one batched call per habit
-      const byHabit = new Map<string, { date: string; value: number; notes?: string }[]>();
-      for (const { habitId, date, value, notes } of entries) {
+      const byHabit = new Map<string, { date: string; value: number; notes?: string; force_sheet_sync?: boolean }[]>();
+      for (const { habitId, date, value, notes, force_sheet_sync } of entries) {
         if (!byHabit.has(habitId)) byHabit.set(habitId, []);
-        byHabit.get(habitId)!.push({ date, value, ...(notes !== undefined ? { notes } : {}) });
+        byHabit.get(habitId)!.push({ date, value, ...(notes !== undefined ? { notes } : {}), ...(force_sheet_sync ? { force_sheet_sync } : {}) });
       }
       return Promise.all(
         Array.from(byHabit.entries()).map(([habitId, logs]) =>

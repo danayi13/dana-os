@@ -1,28 +1,20 @@
 import { useState } from "react";
-import { Bell, X, Clock } from "lucide-react";
+import { Bell, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useStaleHabits, useSnoozeNudge, useDismissNudge } from "@/lib/nudges-api";
+import { useClimbingNudge, useSnoozClimbingNudge, useDismissClimbingNudge } from "@/lib/climbing-api";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { SnoozeDropdown } from "@/components/ui/SnoozeDropdown";
 import type { StaleHabit } from "@/lib/nudges-api";
 
-const SNOOZE_OPTIONS: Array<{ label: string; days: 1 | 3 | 7 | 14 }> = [
-  { label: "1 day", days: 1 },
-  { label: "3 days", days: 3 },
-  { label: "1 week", days: 7 },
-  { label: "2 weeks", days: 14 },
-];
-
 function NudgeCard({ nudge }: { nudge: StaleHabit }) {
-  const [snoozeOpen, setSnoozeOpen] = useState(false);
   const [dismissConfirm, setDismissConfirm] = useState(false);
 
   const snoozeMutation = useSnoozeNudge();
   const dismissMutation = useDismissNudge();
 
-  function handleSnooze(days: 1 | 3 | 7 | 14) {
-    snoozeMutation.mutate(
-      { habitId: nudge.habit_id, days },
-      { onSuccess: () => setSnoozeOpen(false) }
-    );
+  function handleSnooze(days: number) {
+    snoozeMutation.mutate({ habitId: nudge.habit_id, days: days as 1 | 3 | 7 | 14 });
   }
 
   function handleDismiss() {
@@ -34,7 +26,7 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
   return (
     <div
       className="flex items-center gap-3 rounded-xl border px-4 py-3"
-      style={{ borderColor: "var(--border)", background: "var(--social-bg)" }}
+      style={{ borderColor: "var(--nudge-border)", background: "var(--nudge-bg)" }}
     >
       <Bell size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />
 
@@ -48,47 +40,12 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
       </div>
 
       <div className="flex items-center gap-1 shrink-0 relative">
-        {/* Snooze button */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              setSnoozeOpen((v) => !v);
-              setDismissConfirm(false);
-            }}
-            title="Snooze nudge"
-            disabled={snoozeMutation.isPending}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-opacity hover:opacity-70 disabled:opacity-40 text-body"
-            style={{ border: "1px solid var(--border)" }}
-          >
-            <Clock size={12} />
-            Snooze
-          </button>
-
-          {snoozeOpen && (
-            <div
-              className="absolute right-0 top-full mt-1 z-20 rounded-lg border py-1 shadow-lg min-w-[110px]"
-              style={{ background: "var(--bg)", borderColor: "var(--border)" }}
-            >
-              {SNOOZE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.days}
-                  onClick={() => handleSnooze(opt.days)}
-                  className="flex w-full px-3 py-1.5 text-xs hover:opacity-70 text-left text-heading"
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <SnoozeDropdown onSnooze={handleSnooze} isPending={snoozeMutation.isPending} />
 
         {/* Dismiss button */}
         <div className="relative">
           <button
-            onClick={() => {
-              setDismissConfirm((v) => !v);
-              setSnoozeOpen(false);
-            }}
+            onClick={() => setDismissConfirm((v) => !v)}
             title="Dismiss nudge"
             disabled={dismissMutation.isPending}
             className="rounded-md p-1.5 transition-opacity hover:opacity-70 disabled:opacity-40 text-body"
@@ -130,18 +87,88 @@ function NudgeCard({ nudge }: { nudge: StaleHabit }) {
   );
 }
 
+function ClimbingNudgeCard() {
+  const { data: nudge } = useClimbingNudge();
+  const snooze = useSnoozClimbingNudge();
+  const dismiss = useDismissClimbingNudge();
+  const [dismissConfirm, setDismissConfirm] = useState(false);
+
+  if (!nudge?.is_stale) return null;
+
+  const days = nudge.days_since_last;
+
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl border px-4 py-3"
+      style={{ borderColor: "var(--nudge-border)", background: "var(--nudge-bg)" }}
+    >
+      <Bell size={14} style={{ color: "var(--accent)", flexShrink: 0 }} />
+
+      <div className="flex-1 min-w-0">
+        <Link to="/climbing" className="text-sm font-medium text-heading hover:opacity-70 transition-opacity">
+          Climbing
+        </Link>
+        <p className="text-xs text-body">
+          {days != null ? `Last session ${days}d ago` : "No sessions logged yet"}
+        </p>
+      </div>
+
+      <div className="flex items-center gap-1 shrink-0 relative">
+        <SnoozeDropdown onSnooze={(d) => snooze.mutate(d)} isPending={snooze.isPending} />
+
+        <div className="relative">
+          <button
+            onClick={() => setDismissConfirm((v) => !v)}
+            title="Dismiss nudge"
+            disabled={dismiss.isPending}
+            className="rounded-md p-1.5 transition-opacity hover:opacity-70 disabled:opacity-40 text-body"
+          >
+            <X size={14} />
+          </button>
+          {dismissConfirm && (
+            <div
+              className="absolute right-0 top-full mt-1 z-20 rounded-lg border p-3 shadow-lg"
+              style={{ background: "var(--bg)", borderColor: "var(--border)", minWidth: "180px" }}
+            >
+              <p className="text-xs mb-2 text-heading">
+                Dismiss this nudge? It'll reactivate after your next climbing session.
+              </p>
+              <div className="flex gap-2">
+                <button onClick={() => setDismissConfirm(false)} className="text-xs hover:opacity-70 text-body">
+                  Cancel
+                </button>
+                <button
+                  onClick={() => dismiss.mutate(undefined, { onSuccess: () => setDismissConfirm(false) })}
+                  className="text-xs font-semibold hover:opacity-80 text-error"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function NudgeStrip() {
   const { data: stale, isLoading } = useStaleHabits();
+  const { data: climbingNudge } = useClimbingNudge();
 
-  if (isLoading || !stale || stale.length === 0) return null;
+  const hasHabitNudges = stale && stale.length > 0;
+  const hasClimbingNudge = climbingNudge?.is_stale;
+
+  if (isLoading || (!hasHabitNudges && !hasClimbingNudge)) return null;
 
   return (
     <div className="space-y-2">
       <SectionLabel>Nudges</SectionLabel>
       <div className="space-y-1.5">
-        {stale.map((nudge) => (
+        {(stale ?? []).map((nudge) => (
           <NudgeCard key={nudge.habit_id} nudge={nudge} />
         ))}
+        <ClimbingNudgeCard />
       </div>
     </div>
   );
